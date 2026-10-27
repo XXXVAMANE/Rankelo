@@ -336,7 +336,7 @@ details p{color:var(--muted);padding-bottom:1.25rem;max-width:68ch}
 form{display:grid;gap:1.05rem}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .row>*{min-width:0}
-.field{display:grid;gap:.45rem}
+.field{display:grid;gap:.45rem;align-content:start}
 label{font-size:.85rem;font-weight:600}
 label .opt{color:var(--muted);font-weight:400}
 input,select,textarea{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:.85rem .95rem;transition:border-color .25s,box-shadow .25s,background .25s}

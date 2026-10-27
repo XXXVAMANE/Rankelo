@@ -1,6 +1,6 @@
 """Build the Rankelo static site (EN at /, ES at /es/) into ./out and zip it.
 
-Usage: python3 src/build.py [SITE_URL] [WEB3FORMS_KEY]
+Usage: python3 src/build.py [SITE_URL] [WEB3FORMS_KEY] [SHEET_WEB_APP_URL]
 The Web3Forms access key is passed at build time and is not stored in this repository.
 """
 import json, html, shutil, sys, math
@@ -14,9 +14,10 @@ from niches_v2 import NICHES
 
 SITE = (sys.argv[1] if len(sys.argv) > 1 else "https://rankelo.org").rstrip("/")
 KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
+SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "8"  # cache-buster for css/js
+VER = "11"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
@@ -193,7 +194,6 @@ def seq_for(lang, niches):
 def form(lang, niche_name=None, eb=None, h2=None, lead=None, steps=None, side_extra="", sec_id="contact"):
     f = T[lang]["f"]
     svc_opts = "".join(f'<option value="{v}">{e(l)}</option>' for v, l in f["services"])
-    bud_opts = "".join(f'<option value="{e(v)}">{e(l)}</option>' for v, l in f["budgets"])
     niche_in = f'<input type="hidden" name="niche" value="{e(niche_name)}">' if niche_name else ""
     steps_html = ("<ol class=\"olist\">" + "".join(f"<li>{e(s)}</li>" for s in steps) + "</ol>") if steps else ""
     opt = f'<span class="opt">{e(f["opt"])}</span>'
@@ -207,7 +207,7 @@ def form(lang, niche_name=None, eb=None, h2=None, lead=None, steps=None, side_ex
   <div class="wrap contact-grid">
     {side}
     <div class="form-card reveal">
-      <form id="lead-form" novalidate>
+      <form id="lead-form" novalidate{f' data-sheet="{e(SHEET)}"' if SHEET else ""}>
         <input type="hidden" name="access_key" value="{e(KEY)}">
         <input type="hidden" name="subject" value="{e(f['subject'])}">
         <input type="hidden" name="from_name" value="Rankelo website">
@@ -224,13 +224,10 @@ def form(lang, niche_name=None, eb=None, h2=None, lead=None, steps=None, side_ex
         </div>
         <div class="row">
           <div class="field"><label for="f-site">{e(f['site'])}</label><input id="f-site" name="website" inputmode="url" placeholder="www.yourbusiness.com">
-            <label class="check" for="f-nosite"><input type="checkbox" id="f-nosite" name="no_website_box"><span>{e(f['nosite'])}</span></label><span class="err" id="e-site"></span></div>
+            <label class="check" for="f-nosite"><input type="checkbox" id="f-nosite"><span>{e(f['nosite'])}</span></label><span class="err" id="e-site"></span></div>
           <div class="field"><label for="f-city">{e(f['city'])}</label><input id="f-city" name="city" autocomplete="address-level2" placeholder="{e(f['city_ph'])}"></div>
         </div>
-        <div class="row">
-          <div class="field"><label for="f-service">{e(f['service'])}</label><select id="f-service" name="service">{svc_opts}</select></div>
-          <div class="field"><label for="f-budget">{e(f['budget'])}</label><select id="f-budget" name="budget">{bud_opts}</select></div>
-        </div>
+        <div class="field"><label for="f-service">{e(f['service'])}</label><select id="f-service" name="service">{svc_opts}</select></div>
         <div class="field"><label for="f-msg">{e(f['msg'])} {opt}</label><textarea id="f-msg" name="message" placeholder="{e(f['msg_ph'])}"></textarea></div>
         <div class="form-foot"><small>{e(f['privacy'])}</small>
           <button class="btn btn-dark" type="submit" id="f-submit"><span>{e(f['submit'])}</span><span class="arr" aria-hidden="true">→</span></button></div>

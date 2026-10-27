@@ -37,7 +37,7 @@
     var q = $("#qtext"), list = $("#list");
     var you = $(".biz.you", list);
     var rivals = $$(".biz:not(.you)", list);
-    var idx = 0, timer = null;
+    var timer = null;
     var wait = function (ms) { return new Promise(function (r) { timer = setTimeout(r, ms); }); };
     function setItem(item) {
       rivals.forEach(function (el, i) {
@@ -65,22 +65,18 @@
       q.textContent = "";
       for (var i = 1; i <= text.length; i++) { q.textContent = text.slice(0, i); await wait(45 + Math.random() * 55); }
     }
+    // Plays once per page load: type a search, then move the client's business to #1 and stop there.
+    // On pages with several examples (home), a random one is shown on each load.
     async function run() {
       if (!seq.length) return;
-      if (reduce) { setItem(seq[0]); q.textContent = seq[0].q; climb(); return; }
+      var item = seq[Math.floor(Math.random() * seq.length)];
+      setItem(item);
+      if (reduce) { q.textContent = item.q; climb(); return; }
+      q.textContent = "";
       await wait(500);
-      while (true) {
-        var item = seq[idx % seq.length];
-        setItem(item);
-        list.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 350 });
-        await type(item.q);
-        await wait(650);
-        climb();
-        if (seq.length < 2) return;
-        await wait(3400);
-        idx++;
-        await list.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" }).finished.catch(function () {});
-      }
+      await type(item.q);
+      await wait(650);
+      climb();
     }
     run();
     if (fine && !reduce) {
@@ -155,10 +151,16 @@
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(fd.get("email") || "").trim())) { err("email", t("err_email")); ok = false; first = first || "f-email"; }
     if (!nosite.checked && !site.value.trim()) { err("site", t("err_site")); ok = false; first = first || "f-site"; }
     if (!ok) { $("#" + first).focus(); return; }
-    fd.set("no_website", nosite.checked ? "yes" : "no");
+    fd.set("need_website", nosite.checked ? "yes" : "no");
     fd.set("page", location.pathname);
     busy(true);
     if (!LIVE) { setTimeout(function () { showDone(true); }, 700); return; }
+    // Copy of the request to Google Sheets (Apps Script web app). Fire-and-forget: email is the source of truth.
+    var sheetUrl = form.getAttribute("data-sheet");
+    if (sheetUrl && !fd.get("botcheck")) {
+      var sp = new URLSearchParams(fd); sp.delete("access_key"); sp.delete("subject"); sp.delete("from_name");
+      try { fetch(sheetUrl, { method: "POST", mode: "no-cors", keepalive: true, body: sp }).catch(function () {}); } catch (_) {}
+    }
     try {
       var r = await fetch("https://api.web3forms.com/submit", {
         method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
