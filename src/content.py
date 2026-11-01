@@ -25,7 +25,7 @@ T = {
     foot_company="Company", foot_services="Services", foot_industries="Industries", foot_contact="Contact",
     foot_contact_page="Contact us", hours="Mon–Fri, 9:00 AM – 8:00 PM", areas_label="Service areas",
     rights="All rights reserved.",
-    svc_menu=[("Local SEO Campaign", "/services/local-seo/"), ("Google Business Profile", "gbp"), ("SEO-Ready Websites", "web")],
+    svc_menu=[("Local SEO Campaign", "/services/local-seo/"), ("Google Business Profile", "/services/google-business-profile/"), ("SEO-Ready Websites", "web")],
     svc_all="View All Services",
     svc_links=[("Google Business Profile", "services", "gbp"), ("Google Maps rankings", "services", "maps"),
                ("Reviews strategy", "services", "reviews"), ("Website design", "services", "web")],

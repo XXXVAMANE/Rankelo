@@ -80,7 +80,7 @@ HOME = dict(
         dict(t="Google Business Profile Optimization", featured=False, price="$299", unit="one-time",
              d="Improve how your business appears in Google Maps with a properly optimized profile, categories, "
                "services, and business information.",
-             cta="Explore GBP Optimization", href="services/#gbp", pick="gbp"),
+             cta="Explore GBP Optimization", href="services/google-business-profile/", pick="gbp"),
         dict(t="Website + Local SEO", featured=False, price="$1,500", unit="",
              d="A professional local business website built around your services, location, conversions, and local "
                "search visibility from the start.",

@@ -1,14 +1,15 @@
 """Local SEO Campaign service page (/services/local-seo/). Copy supplied by the client (01.11.2026)."""
+import service_page as sp
 
 URL = "/services/local-seo/"
 P = dict(
     title="BEST Local SEO Orlando | Google Maps, GBP & Website SEO Near Me | Rankelo",
     desc="Rankelo helps Orlando businesses improve visibility in Google Maps and local search through Google Business "
          "Profile, website SEO, citations, and tailored Local SEO campaigns. Starting at $750.",
-    crumb="Local SEO",
+    crumb="Local SEO Campaign",
     # 1. HERO
     eyebrow="Local SEO Campaign",
-    h1=("Local SEO for", "Orlando Businesses"),
+    h1="Local SEO for Orlando Businesses",
     sub="Improve your visibility across Google Maps and local search so more nearby customers can find your business "
         "when they are looking for the services you offer.",
     price_label="Starting at", price="$750",
@@ -174,26 +175,9 @@ def render(ctx):
                   + f'<p class="final-small">{e(P["final_small"])}</p>')
     form_html = ctx["form"]("en", h2=P["final_h"], side_extra=final_side, sec_id="audit", audit=dict(
         services=H["form_services"], service_label=H["form_service_label"], msg_label=H["form_msg_label"],
-        submit=P["final_cta"]))
+        submit=P["final_cta"], selected="seo"))
     return f"""<main id="main">
-<div class="hero">
-  <div class="hero-bg"><div class="glow"></div></div>
-  <div class="wrap hero-grid">
-    <div>
-      {ctx['crumbs_html'](ctx['crumbs'])}
-      <p class="eyebrow in" style="--i:0;margin-top:1.4rem">{e(P['eyebrow'])}</p>
-      {ctx['h1'](P['h1'], ' class="in" style="--i:1"')}
-      <p class="lead in" style="--i:2">{e(P['sub'])}</p>
-      <p class="hero-price in" style="--i:3"><small>{e(P['price_label'])}</small> <b>{e(P['price'])}</b></p>
-      <div class="hero-ctas in" style="--i:3">
-        <a class="btn btn-dark shine" href="#audit" data-magnet><span>{e(P['cta1'])}</span>{arr}</a>
-        <a class="btn btn-ghost btn-quiet" href="#included"><span>{e(P['cta2'])}</span></a>
-      </div>
-      <p class="hero-note in" style="--i:4">{e(P['note'])}</p>
-    </div>
-    <div class="in" style="--i:2">{ctx['pack']}</div>
-  </div>
-</div>
+{sp.hero(ctx, P, ctx['pack'], ctx['crumb_items'])}
 <section id="results"><div class="wrap">
   <div class="sec-head reveal"><h2>{e(P['res_h'])}</h2><p class="lead">{e(P['res_lead'])}</p></div>
   <div class="why">{cards(P['res_items'])}</div>
@@ -220,20 +204,7 @@ def render(ctx):
   <div class="reveal"><div class="prose">{paras(P['orl_p'])}</div>
     <p class="area-line"><span class="ico">{icon('maps')}</span><span>{e(P['orl_line'])}</span></p></div>
 </div></section>
-<section id="pricing"><div class="wrap">
-  <div class="price-panel card dark reveal">
-    <div>
-      <p class="eyebrow">{e(P['pr_eb'])}</p>
-      <h2>{e(P['pr_h'])}</h2>
-      <div class="price"><small>{e(P['price_label'])}</small><b>{e(P['price'])}</b></div>
-    </div>
-    <div class="price-panel-body">
-      {paras(P['pr_p'])}
-      <a class="btn btn-gold" href="#audit" data-magnet><span>{e(P['pr_cta'])}</span>{arr}</a>
-      <small>{e(P['pr_small'])}</small>
-    </div>
-  </div>
-</div></section>
+{sp.price_panel(ctx, P, P['pr_eb'], P['pr_h'], P['pr_p'], P['pr_cta'], P['pr_small'])}
 <section id="after" style="padding-top:0"><div class="wrap problem">
   <div class="sec-head reveal" style="margin-bottom:0"><h2>{e(P['after_h'])}</h2></div>
   <div class="reveal"><div class="prose">{paras(P['after_p'])}</div>

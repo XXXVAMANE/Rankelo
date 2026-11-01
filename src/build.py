@@ -13,13 +13,15 @@ from content import T, SLUGS, SERVICES, PACKAGES, PKG_UI, STEPS, PROMISES, FAQ, 
 from niches_v2 import NICHES
 import home_v2
 import local_seo
+import gbp
+import service_page
 
 SITE = (sys.argv[1] if len(sys.argv) > 1 else "https://rankelo.org").rstrip("/")
 KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
 SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "15"  # cache-buster for css/js
+VER = "16"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
@@ -212,7 +214,8 @@ def form(lang, niche_name=None, eb=None, h2=None, lead=None, steps=None, side_ex
     f = dict(T[lang]["f"])
     if audit:
         f.update(services=audit["services"], service=audit["service_label"], msg=audit["msg_label"], submit=audit["submit"])
-    svc_opts = "".join(f'<option value="{v}">{e(l)}</option>' for v, l in f["services"])
+    sel = (audit or {}).get("selected")
+    svc_opts = "".join(f'<option value="{v}"{" selected" if v == sel else ""}>{e(l)}</option>' for v, l in f["services"])
     niche_in = f'<input type="hidden" name="niche" value="{e(niche_name)}">' if niche_name else ""
     steps_html = ("<ol class=\"olist\">" + "".join(f"<li>{e(s)}</li>" for s in steps) + "</ol>") if steps else ""
     opt = f'<span class="opt">{e(f["opt"])}</span>'
@@ -513,17 +516,18 @@ def body_contact(lang, P):
     return form(lang, h2=P["next_h"], steps=P["next"], side_extra=info, sec_id="form")
 
 
-def page_local_seo():
-    P, url = local_seo.P, local_seo.URL
+def page_service(mod, name, service_type, price):
+    """English-only service page built from a content module (local_seo, gbp, ...)."""
+    P, url = mod.P, mod.URL
     crumbs = [(T["en"]["home"], path("en", "home")), (T["en"]["nav"][0][1], path("en", "services")), (P["crumb"], url)]
     ctx = dict(e=e, icon=icon, h1=h1, faq_items=faq_items, form=form, crumbs_html=crumbs_html, crumbs=crumbs,
-               home=home_v2.HOME, pack=pack("en", seq_for("en", NICHES)))
-    body = local_seo.render(ctx)
-    service_ld = {"@type": "Service", "@id": f"{SITE}{url}#service", "name": "Local SEO Campaign", "serviceType": "Local SEO",
+               crumb_items=crumbs[1:], home=home_v2.HOME, pack=pack("en", seq_for("en", NICHES)))
+    body = mod.render(ctx)
+    service_ld = {"@type": "Service", "@id": f"{SITE}{url}#service", "name": name, "serviceType": service_type,
                   "description": P["desc"], "provider": {"@id": f"{SITE}/#business"},
                   "areaServed": [{"@type": "City", "name": "Orlando, FL"}], "url": f"{SITE}{url}",
-                  "offers": {"@type": "Offer", "priceCurrency": "USD", "price": "750",
-                             "priceSpecification": {"@type": "PriceSpecification", "minPrice": "750", "priceCurrency": "USD"}}}
+                  "offers": {"@type": "Offer", "priceCurrency": "USD", "price": price,
+                             "priceSpecification": {"@type": "PriceSpecification", "minPrice": price, "priceCurrency": "USD"}}}
     ld = ld_graph("en", url, P["title"], P["desc"], crumbs=crumbs, extra=[service_ld, faq_ld(url, "en", P["faq"])])
     alts = {"en": url}  # English only for now
     hdr_alts = {"en": url, "es": path("es", "services")}
@@ -694,7 +698,8 @@ def main():
         pages.append(simple_page(lang, "contact", body_contact))
         for n in NICHES:
             pages.append(page_niche(lang, n))
-    pages.append(page_local_seo())
+    pages.append(page_service(local_seo, "Local SEO Campaign", "Local SEO", "750"))
+    pages.append(page_service(gbp, "Google Business Profile Optimization", "Google Business Profile optimization", "299"))
     seen = {}
     for url, alts, doc in pages:
         d = OUT / url.strip("/")
