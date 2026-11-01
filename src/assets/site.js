@@ -27,6 +27,17 @@
     addEventListener("keydown", function (e) { if (e.key === "Escape") setMenu(false); });
     addEventListener("resize", function () { if (innerWidth > 940) setMenu(false); });
   }
+  /* ---------- Services dropdown (hover on desktop, click/tap + keyboard everywhere) ---------- */
+  $$(".dd").forEach(function (dd) {
+    var b = $(".dd-btn", dd);
+    function set(o) { dd.classList.toggle("open", o); b.setAttribute("aria-expanded", String(o)); }
+    b.addEventListener("click", function (e) { e.stopPropagation(); set(!dd.classList.contains("open")); });
+    dd.addEventListener("mouseenter", function () { if (fine) b.setAttribute("aria-expanded", "true"); });
+    dd.addEventListener("mouseleave", function () { if (fine) set(false); });
+    document.addEventListener("click", function (e) { if (!dd.contains(e.target)) set(false); });
+    dd.addEventListener("keydown", function (e) { if (e.key === "Escape") { set(false); b.focus(); } });
+    dd.addEventListener("focusout", function (e) { if (!dd.contains(e.relatedTarget)) set(false); });
+  });
   var yr = $("#yr"); if (yr) yr.textContent = new Date().getFullYear();
 
   /* ---------- hero: type a search, then climb to #1 (cycles through examples) ---------- */

@@ -18,7 +18,7 @@ KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
 SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "12"  # cache-buster for css/js
+VER = "13"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
@@ -96,7 +96,7 @@ def head(lang, title, desc, url_path, alts, ld, og):
 <meta name="twitter:image" content="{SITE}/{og}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/assets/site.css?v={VER}">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
 </head>
@@ -106,9 +106,19 @@ def head(lang, title, desc, url_path, alts, ld, og):
 
 def header(lang, current, alts):
     tx = T[lang]
-    links = "".join(
-        f'<a href="{path(lang, k)}"{" aria-current=\"page\"" if k == current else ""}>{e(lbl)}</a>' for k, lbl in tx["nav"])
-    mlinks = "".join(f'<a class="m" href="{path(lang, k)}">{e(lbl)}</a>' for k, lbl in tx["nav"])
+    sp = path(lang, "services")
+    dd_items = "".join(f'<a role="menuitem" href="{sp}#{a}">{e(lbl)}</a>' for lbl, a in tx["svc_menu"])
+    def nav_link(k, lbl):
+        cur = " aria-current=\"page\"" if k == current else ""
+        if k != "services":
+            return f'<a href="{path(lang, k)}"{cur}>{e(lbl)}</a>'
+        return (f'<div class="dd"><button class="dd-btn" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="dd-svc"{cur}>'
+                f'{e(lbl)}<svg class="chev" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'
+                f'<div class="dd-menu" id="dd-svc" role="menu">{dd_items}<hr><a role="menuitem" class="dd-all" href="{sp}">{e(tx["svc_all"])} <span aria-hidden="true">→</span></a></div></div>')
+    links = "".join(nav_link(k, lbl) for k, lbl in tx["nav"])
+    msub = "".join(f'<a class="ms" href="{sp}#{a}">{e(lbl)}</a>' for lbl, a in tx["svc_menu"])
+    mlinks = "".join(f'<a class="m" href="{path(lang, k)}">{e(lbl)}</a>' + (f'<div class="msub">{msub}</div>' if k == "services" else "")
+                     for k, lbl in tx["nav"])
     sw = "".join(
         f'<a href="{alts.get(l, path(l, "home"))}" hreflang="{l}" lang="{l}"{" aria-current=\"page\"" if l == lang else ""}>{l.upper()}</a>'
         for l in LANGS)
@@ -626,9 +636,9 @@ def page_404():
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Page not found | Rankelo</title><meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&family=DM+Sans:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,600;9..40,800&display=swap">
 <style>html,body{{margin:0;height:100%}}body{{background:#fff;color:#0C0C0D;font-family:'DM Sans',system-ui,sans-serif;display:grid;place-items:center;text-align:center;padding:0 18px}}
-h1{{font-family:Unbounded,system-ui,sans-serif;font-size:clamp(3rem,12vw,6rem);margin:0;background:linear-gradient(transparent 60%,#FFB547 60%,#FFB547 92%,transparent 92%);display:inline}}
+h1{{font-family:"DM Sans",system-ui,sans-serif;font-weight:800;letter-spacing:-.04em;font-size:clamp(3rem,12vw,6rem);margin:0;background:linear-gradient(transparent 60%,#FFB547 60%,#FFB547 92%,transparent 92%);display:inline}}
 p{{color:#6C6C72;margin:1.25rem 0 2rem}}.b{{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}}
 a{{display:inline-block;background:#0C0C0D;color:#fff;font-weight:600;text-decoration:none;padding:1rem 1.5rem;border-radius:999px}}a+a{{background:#fff;color:#0C0C0D;border:1.5px solid #D4D4CF}}</style></head>
 <body><main><h1>404</h1><p>This page doesn't exist. · Esta página no existe.</p><div class="b"><a href="/">Homepage →</a><a href="/es/">Inicio en español →</a></div></main></body></html>
