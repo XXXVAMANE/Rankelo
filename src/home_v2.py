@@ -76,7 +76,7 @@ HOME = dict(
              d="Improve your visibility across Google Maps and local search through Google Business Profile "
                "optimization, website SEO, citations, rank tracking, and additional local SEO work when your market "
                "requires it.",
-             cta="Explore Local SEO", href="services/#maps", pick="seo"),
+             cta="Explore Local SEO", href="services/local-seo/", pick="seo"),
         dict(t="Google Business Profile Optimization", featured=False, price="$299", unit="one-time",
              d="Improve how your business appears in Google Maps with a properly optimized profile, categories, "
                "services, and business information.",
@@ -137,6 +137,9 @@ HOME = dict(
 )
 
 EXTRA_ICONS = {
+    "search": '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
+    "phone": '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+    "track": '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
     "chat": '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h7M8.5 14.5h4"/>',
     "target": '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
     "key": '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M14.5 8.5l2 2"/>',

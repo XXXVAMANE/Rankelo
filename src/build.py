@@ -12,13 +12,14 @@ sys.path.insert(0, str(HERE))
 from content import T, SLUGS, SERVICES, PACKAGES, PKG_UI, STEPS, PROMISES, FAQ, PAGES, PATHS, PHONE_DISPLAY, PHONE_E164, AREAS
 from niches_v2 import NICHES
 import home_v2
+import local_seo
 
 SITE = (sys.argv[1] if len(sys.argv) > 1 else "https://rankelo.org").rstrip("/")
 KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
 SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "14"  # cache-buster for css/js
+VER = "15"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
@@ -107,7 +108,8 @@ def head(lang, title, desc, url_path, alts, ld, og):
 def header(lang, current, alts):
     tx = T[lang]
     sp = path(lang, "services")
-    dd_items = "".join(f'<a role="menuitem" href="{sp}#{a}">{e(lbl)}</a>' for lbl, a in tx["svc_menu"])
+    svc_href = lambda a: a if a.startswith("/") else f"{sp}#{a}"
+    dd_items = "".join(f'<a role="menuitem" href="{svc_href(a)}">{e(lbl)}</a>' for lbl, a in tx["svc_menu"])
     def nav_link(k, lbl):
         cur = " aria-current=\"page\"" if k == current else ""
         if k != "services":
@@ -116,7 +118,7 @@ def header(lang, current, alts):
                 f'{e(lbl)}<svg class="chev" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'
                 f'<div class="dd-menu" id="dd-svc" role="menu">{dd_items}<hr><a role="menuitem" class="dd-all" href="{sp}">{e(tx["svc_all"])} <span aria-hidden="true">→</span></a></div></div>')
     links = "".join(nav_link(k, lbl) for k, lbl in tx["nav"])
-    msub = "".join(f'<a class="ms" href="{sp}#{a}">{e(lbl)}</a>' for lbl, a in tx["svc_menu"])
+    msub = "".join(f'<a class="ms" href="{svc_href(a)}">{e(lbl)}</a>' for lbl, a in tx["svc_menu"])
     mlinks = "".join(f'<a class="m" href="{path(lang, k)}">{e(lbl)}</a>' + (f'<div class="msub">{msub}</div>' if k == "services" else "")
                      for k, lbl in tx["nav"])
     sw = "".join(
@@ -511,6 +513,23 @@ def body_contact(lang, P):
     return form(lang, h2=P["next_h"], steps=P["next"], side_extra=info, sec_id="form")
 
 
+def page_local_seo():
+    P, url = local_seo.P, local_seo.URL
+    crumbs = [(T["en"]["home"], path("en", "home")), (T["en"]["nav"][0][1], path("en", "services")), (P["crumb"], url)]
+    ctx = dict(e=e, icon=icon, h1=h1, faq_items=faq_items, form=form, crumbs_html=crumbs_html, crumbs=crumbs,
+               home=home_v2.HOME, pack=pack("en", seq_for("en", NICHES)))
+    body = local_seo.render(ctx)
+    service_ld = {"@type": "Service", "@id": f"{SITE}{url}#service", "name": "Local SEO Campaign", "serviceType": "Local SEO",
+                  "description": P["desc"], "provider": {"@id": f"{SITE}/#business"},
+                  "areaServed": [{"@type": "City", "name": "Orlando, FL"}], "url": f"{SITE}{url}",
+                  "offers": {"@type": "Offer", "priceCurrency": "USD", "price": "750",
+                             "priceSpecification": {"@type": "PriceSpecification", "minPrice": "750", "priceCurrency": "USD"}}}
+    ld = ld_graph("en", url, P["title"], P["desc"], crumbs=crumbs, extra=[service_ld, faq_ld(url, "en", P["faq"])])
+    alts = {"en": url}  # English only for now
+    hdr_alts = {"en": url, "es": path("es", "services")}
+    return url, alts, head("en", P["title"], P["desc"], url, alts, ld, og_for("en")) + header("en", "services", hdr_alts) + body + footer("en") + i18n_script("en")
+
+
 def page_niche(lang, n):
     N, U = n[lang], PAGES[lang]["niche"]
     url = npath(lang, n)
@@ -675,6 +694,7 @@ def main():
         pages.append(simple_page(lang, "contact", body_contact))
         for n in NICHES:
             pages.append(page_niche(lang, n))
+    pages.append(page_local_seo())
     seen = {}
     for url, alts, doc in pages:
         d = OUT / url.strip("/")
