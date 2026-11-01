@@ -18,7 +18,7 @@ KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
 SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "13"  # cache-buster for css/js
+VER = "14"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
@@ -204,8 +204,12 @@ def seq_for(lang, niches):
     return [dict(q=n[lang]["query"], rivals=n[lang]["rivals"], you=n[lang]["you"]) for n in niches]
 
 
-def form(lang, niche_name=None, eb=None, h2=None, lead=None, steps=None, side_extra="", sec_id="contact"):
-    f = T[lang]["f"]
+def form(lang, niche_name=None, eb=None, h2=None, lead=None, steps=None, side_extra="", sec_id="contact", audit=None):
+    """audit: optional dict(services, service_label, msg_label, submit) for the shorter homepage audit form
+    (no city field, no "no website" checkbox, website optional)."""
+    f = dict(T[lang]["f"])
+    if audit:
+        f.update(services=audit["services"], service=audit["service_label"], msg=audit["msg_label"], submit=audit["submit"])
     svc_opts = "".join(f'<option value="{v}">{e(l)}</option>' for v, l in f["services"])
     niche_in = f'<input type="hidden" name="niche" value="{e(niche_name)}">' if niche_name else ""
     steps_html = ("<ol class=\"olist\">" + "".join(f"<li>{e(s)}</li>" for s in steps) + "</ol>") if steps else ""
@@ -216,6 +220,18 @@ def form(lang, niche_name=None, eb=None, h2=None, lead=None, steps=None, side_ex
       {f'<p class="lead">{e(lead)}</p>' if lead else ''}
       {steps_html}{side_extra}
     </div>"""
+    if audit:
+        site_row = f"""<div class="row">
+          <div class="field"><label for="f-site">{e(f['site'])} {opt}</label><input id="f-site" name="website" inputmode="url" placeholder="www.yourbusiness.com"><span class="err" id="e-site"></span></div>
+          <div class="field"><label for="f-service">{e(f['service'])}</label><select id="f-service" name="service">{svc_opts}</select></div>
+        </div>"""
+    else:
+        site_row = f"""<div class="row">
+          <div class="field"><label for="f-site">{e(f['site'])}</label><input id="f-site" name="website" inputmode="url" placeholder="www.yourbusiness.com">
+            <label class="check" for="f-nosite"><input type="checkbox" id="f-nosite"><span>{e(f['nosite'])}</span></label><span class="err" id="e-site"></span></div>
+          <div class="field"><label for="f-city">{e(f['city'])}</label><input id="f-city" name="city" autocomplete="address-level2" placeholder="{e(f['city_ph'])}"></div>
+        </div>"""
+    svc_field = "" if audit else f'<div class="field"><label for="f-service">{e(f["service"])}</label><select id="f-service" name="service">{svc_opts}</select></div>'
     return f"""<section id="{sec_id}">
   <div class="wrap contact-grid">
     {side}
@@ -235,12 +251,8 @@ def form(lang, niche_name=None, eb=None, h2=None, lead=None, steps=None, side_ex
           <div class="field"><label for="f-email">{e(f['email'])}</label><input id="f-email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required><span class="err" id="e-email"></span></div>
           <div class="field"><label for="f-phone">{e(f['phone'])} {opt}</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="+1 (555) 000-0000"></div>
         </div>
-        <div class="row">
-          <div class="field"><label for="f-site">{e(f['site'])}</label><input id="f-site" name="website" inputmode="url" placeholder="www.yourbusiness.com">
-            <label class="check" for="f-nosite"><input type="checkbox" id="f-nosite"><span>{e(f['nosite'])}</span></label><span class="err" id="e-site"></span></div>
-          <div class="field"><label for="f-city">{e(f['city'])}</label><input id="f-city" name="city" autocomplete="address-level2" placeholder="{e(f['city_ph'])}"></div>
-        </div>
-        <div class="field"><label for="f-service">{e(f['service'])}</label><select id="f-service" name="service">{svc_opts}</select></div>
+        {site_row}
+        {svc_field}
         <div class="field"><label for="f-msg">{e(f['msg'])} {opt}</label><textarea id="f-msg" name="message" placeholder="{e(f['msg_ph'])}"></textarea></div>
         <div class="form-foot"><small>{e(f['privacy'])}</small>
           <button class="btn btn-dark" type="submit" id="f-submit"><span>{e(f['submit'])}</span><span class="arr" aria-hidden="true">→</span></button></div>
@@ -357,7 +369,7 @@ def page_home_v2(lang):
     H = home_v2.HOME
     url = path(lang, "home")
     alts = {l: path(l, "home") for l in LANGS}
-    ctx = dict(e=e, path=path, icon=icon, h1=h1, faq_items=faq_items, pack=pack(lang, seq_for(lang, NICHES)))
+    ctx = dict(e=e, path=path, icon=icon, h1=h1, faq_items=faq_items, form=form, pack=pack(lang, seq_for(lang, NICHES)))
     body = home_v2.render(lang, ctx)
     ld = ld_graph(lang, url, H["title"], H["desc"], extra=[faq_ld(url, lang, H["faq"])])
     return url, alts, head(lang, H["title"], H["desc"], url, alts, ld, og_for(lang)) + header(lang, "home", alts) + body + footer(lang) + i18n_script(lang)

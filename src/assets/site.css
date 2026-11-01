@@ -411,39 +411,53 @@ main:has(> section.alt:last-child) + footer.site{margin-top:0}
 .problem .prose{font-size:1.08rem}
 .callout{margin-top:.5rem;padding:1.4rem 1.5rem;border-radius:var(--r);background:var(--ink);color:#fff;font:500 clamp(1.05rem,2vw,1.25rem)/1.4 var(--f-display);letter-spacing:-.01em;position:relative;overflow:hidden}
 .callout::before{content:"";position:absolute;width:220px;height:220px;right:-80px;top:-120px;border-radius:50%;background:radial-gradient(circle,rgba(255,181,71,.5),transparent 65%)}
-.callout span{position:relative}
+.callout strong{position:relative;font-weight:700}
 @media (max-width:860px){.problem{grid-template-columns:1fr}}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 @media (max-width:700px){.grid2{grid-template-columns:1fr}}
 .closer{margin-top:2rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;padding-top:1.75rem;border-top:1px solid var(--line)}
-.closer p{font:600 clamp(1.1rem,2.2vw,1.4rem)/1.35 var(--f-display);letter-spacing:-.01em;max-width:36ch}
+.closer p{font:400 clamp(1.1rem,2.2vw,1.4rem)/1.35 var(--f-display);letter-spacing:-.015em;max-width:40ch}
+.closer strong{font-weight:700}
 .why{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
 .why .card{padding:1.5rem;display:grid;gap:.7rem;align-content:start}
 .why h3{font-size:1.05rem;font-weight:700}
 .why p{color:var(--muted);font-size:.95rem}
 @media (max-width:1000px){.why{grid-template-columns:1fr 1fr}}
 @media (max-width:540px){.why{grid-template-columns:1fr}}
-.offers{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;align-items:stretch}
-.offer{padding:1.75rem;display:flex;flex-direction:column;gap:.9rem;min-width:0}
-.offer h3{font-size:1.25rem;font-weight:700}
+.offers{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;align-items:stretch}
+.offer{padding:1.6rem;display:flex;flex-direction:column;gap:.9rem;min-width:0}
+.offer h3{font-size:1.2rem;font-weight:700;text-wrap:balance}
 .offer p{color:var(--muted);font-size:.95rem}
 .card.dark.offer p{color:#C3C3C8}
 .price{display:grid;gap:.15rem;margin-top:auto;padding-top:1rem;border-top:1px solid var(--line)}
 .card.dark .price{border-top-color:#2A2A2E}
 .price small{font:600 .72rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .card.dark .price small{color:#9E9EA5}
-.price b{font:700 2rem/1.1 var(--f-display);letter-spacing:-.02em}
+.price b{font:700 2rem/1.1 var(--f-display);letter-spacing:-.03em}
+.price b i{font:500 .95rem/1 var(--f-body);font-style:normal;letter-spacing:0;color:var(--muted);margin-left:.1rem}
+.card.dark .price b i{color:#C3C3C8}
 .card.dark .price b{color:var(--gold)}
 .offer .link{align-self:flex-start}
 .card.dark .link{color:#fff}
 .offer-tag{align-self:flex-start;font:600 .68rem/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;background:var(--gold);color:var(--gold-ink);padding:.42rem .6rem;border-radius:999px}
-.offers-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;margin-top:1.75rem}
+.offers-foot{display:flex;flex-direction:column;align-items:flex-start;gap:.9rem;margin-top:1.75rem}
 .offers-foot small{color:var(--muted);font-size:.88rem;max-width:60ch}
-@media (max-width:960px){.offers{grid-template-columns:1fr}}
+@media (max-width:1160px){.offers{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.offers{grid-template-columns:1fr}}
+.link-quiet{color:var(--ink-2);border-bottom-color:var(--line-2)}
+.link-quiet:hover{border-bottom-color:var(--gold)}
+.btn-quiet{border-color:var(--line-2)}
+.how-steps .step h3{font-size:1.15rem;font-weight:700}
+.how-steps .step p{color:var(--muted);font-size:.95rem}
+.how-steps .step{z-index:1}
+.offer .link{font-size:.92rem}
+.how-foot{margin-top:2.25rem}
+.final-small{margin-top:.6rem;color:var(--muted);font-size:.92rem}
+.final-cta #audit h2{max-width:16ch}
 .still{margin-top:1.5rem;padding:1.5rem;border-radius:var(--r);background:#fff;border:1px solid var(--line);display:grid;gap:.6rem}
 .still h3{font-size:1.2rem;font-weight:700}
 .still p{color:var(--muted)}
-.still .btn{justify-self:start;margin-top:.4rem}
+.still .link{justify-self:start;margin-top:.3rem}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}

@@ -123,14 +123,15 @@
   var key = form.querySelector('input[name="access_key"]').value;
   var LIVE = !/^YOUR_/.test(key) && /^https?:$/.test(location.protocol) && !/localhost|127\.0\.0\.1|claude/.test(location.hostname);
   var site = $("#f-site"), nosite = $("#f-nosite"), service = $("#f-service");
-  function syncSite() { site.disabled = nosite.checked; if (nosite.checked) { site.value = ""; clr("site"); } }
-  nosite.addEventListener("change", function () {
+  // The homepage audit form has no "no website yet" checkbox and the website field is optional there.
+  function syncSite() { if (!nosite) return; site.disabled = nosite.checked; if (nosite.checked) { site.value = ""; clr("site"); } }
+  if (nosite) nosite.addEventListener("change", function () {
     syncSite();
     if (nosite.checked) service.value = "site"; else if (service.value === "site") service.value = "seo";
   });
   function pick(v) {
     if (!v || !service.querySelector('option[value="' + v + '"]')) return;
-    service.value = v; nosite.checked = (v === "site"); syncSite();
+    service.value = v; if (nosite) nosite.checked = (v === "site"); syncSite();
   }
   $$("[data-pick]").forEach(function (a) {
     a.addEventListener("click", function () {
@@ -160,9 +161,9 @@
     var fd = new FormData(form), ok = true, first = null;
     if (!String(fd.get("name") || "").trim()) { err("name", t("err_name")); ok = false; first = first || "f-name"; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(fd.get("email") || "").trim())) { err("email", t("err_email")); ok = false; first = first || "f-email"; }
-    if (!nosite.checked && !site.value.trim()) { err("site", t("err_site")); ok = false; first = first || "f-site"; }
+    if (nosite && !nosite.checked && !site.value.trim()) { err("site", t("err_site")); ok = false; first = first || "f-site"; }
     if (!ok) { $("#" + first).focus(); return; }
-    fd.set("need_website", nosite.checked ? "yes" : "no");
+    fd.set("need_website", (nosite ? nosite.checked : service.value === "site") ? "yes" : "no");
     fd.set("page", location.pathname);
     busy(true);
     if (!LIVE) { setTimeout(function () { showDone(true); }, 700); return; }
