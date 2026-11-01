@@ -11,13 +11,14 @@ HERE = Path(__file__).parent
 sys.path.insert(0, str(HERE))
 from content import T, SLUGS, SERVICES, PACKAGES, PKG_UI, STEPS, PROMISES, FAQ, PAGES, PATHS, PHONE_DISPLAY, PHONE_E164, AREAS
 from niches_v2 import NICHES
+import home_v2
 
 SITE = (sys.argv[1] if len(sys.argv) > 1 else "https://rankelo.org").rstrip("/")
 KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
 SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "11"  # cache-buster for css/js
+VER = "12"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
@@ -41,6 +42,8 @@ ICONS = {
 
 
 def icon(k, size=22):
+    if k in home_v2.EXTRA_ICONS and k not in ICONS:
+        ICONS[k] = home_v2.EXTRA_ICONS[k]
     return (f'<svg width="{size}" height="{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
             f'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS[k]}</svg>')
 
@@ -93,7 +96,7 @@ def head(lang, title, desc, url_path, alts, ld, og):
 <meta name="twitter:image" content="{SITE}/{og}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/assets/site.css?v={VER}">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
 </head>
@@ -340,7 +343,19 @@ def og_for(lang):
 
 
 # ------------------------------------------------------------------ pages
+def page_home_v2(lang):
+    H = home_v2.HOME
+    url = path(lang, "home")
+    alts = {l: path(l, "home") for l in LANGS}
+    ctx = dict(e=e, path=path, icon=icon, h1=h1, faq_items=faq_items, pack=pack(lang, seq_for(lang, NICHES)))
+    body = home_v2.render(lang, ctx)
+    ld = ld_graph(lang, url, H["title"], H["desc"], extra=[faq_ld(url, lang, H["faq"])])
+    return url, alts, head(lang, H["title"], H["desc"], url, alts, ld, og_for(lang)) + header(lang, "home", alts) + body + footer(lang) + i18n_script(lang)
+
+
 def page_home(lang):
+    if lang == "en":
+        return page_home_v2(lang)
     tx, P = T[lang], PAGES[lang]["home"]
     url = path(lang, "home")
     alts = {l: path(l, "home") for l in LANGS}
@@ -611,8 +626,8 @@ def page_404():
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Page not found | Rankelo</title><meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&family=Manrope:wght@500;600&display=swap">
-<style>html,body{{margin:0;height:100%}}body{{background:#fff;color:#0C0C0D;font-family:Manrope,system-ui,sans-serif;display:grid;place-items:center;text-align:center;padding:0 18px}}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&family=DM+Sans:wght@500;600&display=swap">
+<style>html,body{{margin:0;height:100%}}body{{background:#fff;color:#0C0C0D;font-family:'DM Sans',system-ui,sans-serif;display:grid;place-items:center;text-align:center;padding:0 18px}}
 h1{{font-family:Unbounded,system-ui,sans-serif;font-size:clamp(3rem,12vw,6rem);margin:0;background:linear-gradient(transparent 60%,#FFB547 60%,#FFB547 92%,transparent 92%);display:inline}}
 p{{color:#6C6C72;margin:1.25rem 0 2rem}}.b{{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}}
 a{{display:inline-block;background:#0C0C0D;color:#fff;font-weight:600;text-decoration:none;padding:1rem 1.5rem;border-radius:999px}}a+a{{background:#fff;color:#0C0C0D;border:1.5px solid #D4D4CF}}</style></head>

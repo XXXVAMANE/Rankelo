@@ -17,8 +17,8 @@
   --up:#14955A;
   --up-soft:#E5F6EC;
   --err:#C8372D;
-  --f-display:"Unbounded","Manrope",system-ui,sans-serif;
-  --f-body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-display:"Unbounded","DM Sans",system-ui,sans-serif;
+  --f-body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
   --s-1:.8125rem;--s0:1rem;--s1:1.125rem;--s2:1.5rem;--s3:clamp(1.65rem,3.4vw,2.35rem);--s4:clamp(2.1rem,5.6vw,3.75rem);
   --r:18px;
@@ -380,6 +380,49 @@ footer.site{background:var(--ink);color:#C9C9CE;padding-block:3.5rem 2rem;margin
 .foot-bot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;margin-top:2.75rem;padding-top:1.5rem;border-top:1px solid #26262A;font-size:.82rem;color:#8E8E95}
 @media (max-width:960px){.foot{grid-template-columns:1fr 1fr}.foot>:first-child{grid-column:1/-1}}
 @media (max-width:480px){.foot{grid-template-columns:1fr}}
+
+/* ---- homepage v2 ---- */
+main:has(> section.alt:last-child) + footer.site{margin-top:0}
+
+.hero-note{margin-top:1.1rem;color:var(--muted);font-size:.92rem;max-width:52ch;display:flex;gap:.6rem;align-items:flex-start}
+.hero-note::before{content:"";flex:none;width:18px;height:18px;margin-top:.15rem;border-radius:6px;background:var(--gold-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='6' fill='none' stroke='%231A1205' stroke-width='2.6'/%3E%3Cpath d='M16 16l4 4' stroke='%231A1205' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") center/12px no-repeat;border:1px solid #FBE3BB}
+.problem{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:2rem 4rem;align-items:start}
+.problem .prose{font-size:1.08rem}
+.callout{margin-top:.5rem;padding:1.4rem 1.5rem;border-radius:var(--r);background:var(--ink);color:#fff;font:500 clamp(1.05rem,2vw,1.25rem)/1.4 var(--f-display);letter-spacing:-.01em;position:relative;overflow:hidden}
+.callout::before{content:"";position:absolute;width:220px;height:220px;right:-80px;top:-120px;border-radius:50%;background:radial-gradient(circle,rgba(255,181,71,.5),transparent 65%)}
+.callout span{position:relative}
+@media (max-width:860px){.problem{grid-template-columns:1fr}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media (max-width:700px){.grid2{grid-template-columns:1fr}}
+.closer{margin-top:2rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;padding-top:1.75rem;border-top:1px solid var(--line)}
+.closer p{font:600 clamp(1.1rem,2.2vw,1.4rem)/1.35 var(--f-display);letter-spacing:-.01em;max-width:36ch}
+.why{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.why .card{padding:1.5rem;display:grid;gap:.7rem;align-content:start}
+.why h3{font-size:1.05rem;font-weight:700}
+.why p{color:var(--muted);font-size:.95rem}
+@media (max-width:1000px){.why{grid-template-columns:1fr 1fr}}
+@media (max-width:540px){.why{grid-template-columns:1fr}}
+.offers{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;align-items:stretch}
+.offer{padding:1.75rem;display:flex;flex-direction:column;gap:.9rem;min-width:0}
+.offer h3{font-size:1.25rem;font-weight:700}
+.offer p{color:var(--muted);font-size:.95rem}
+.card.dark.offer p{color:#C3C3C8}
+.price{display:grid;gap:.15rem;margin-top:auto;padding-top:1rem;border-top:1px solid var(--line)}
+.card.dark .price{border-top-color:#2A2A2E}
+.price small{font:600 .72rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.card.dark .price small{color:#9E9EA5}
+.price b{font:700 2rem/1.1 var(--f-display);letter-spacing:-.02em}
+.card.dark .price b{color:var(--gold)}
+.offer .link{align-self:flex-start}
+.card.dark .link{color:#fff}
+.offer-tag{align-self:flex-start;font:600 .68rem/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;background:var(--gold);color:var(--gold-ink);padding:.42rem .6rem;border-radius:999px}
+.offers-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;margin-top:1.75rem}
+.offers-foot small{color:var(--muted);font-size:.88rem;max-width:60ch}
+@media (max-width:960px){.offers{grid-template-columns:1fr}}
+.still{margin-top:1.5rem;padding:1.5rem;border-radius:var(--r);background:#fff;border:1px solid var(--line);display:grid;gap:.6rem}
+.still h3{font-size:1.2rem;font-weight:700}
+.still p{color:var(--muted)}
+.still .btn{justify-self:start;margin-top:.4rem}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
