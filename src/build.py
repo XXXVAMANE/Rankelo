@@ -25,7 +25,7 @@ KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
 SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "19"  # cache-buster for css/js
+VER = "20"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
