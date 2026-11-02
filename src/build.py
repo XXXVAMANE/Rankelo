@@ -14,6 +14,7 @@ from niches_v2 import NICHES
 import home_v2
 import local_seo
 import gbp
+import website_seo
 import service_page
 
 SITE = (sys.argv[1] if len(sys.argv) > 1 else "https://rankelo.org").rstrip("/")
@@ -21,7 +22,7 @@ KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
 SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "16"  # cache-buster for css/js
+VER = "17"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
@@ -698,8 +699,9 @@ def main():
         pages.append(simple_page(lang, "contact", body_contact))
         for n in NICHES:
             pages.append(page_niche(lang, n))
-    pages.append(page_service(local_seo, "Local SEO Campaign", "Local SEO", "750"))
+    pages.append(page_service(local_seo, "Local SEO Campaign", "Local SEO", "749"))
     pages.append(page_service(gbp, "Google Business Profile Optimization", "Google Business Profile optimization", "299"))
+    pages.append(page_service(website_seo, "Website + Local SEO", "Local SEO website design", "1999"))
     seen = {}
     for url, alts, doc in pages:
         d = OUT / url.strip("/")

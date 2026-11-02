@@ -5,14 +5,14 @@ URL = "/services/local-seo/"
 P = dict(
     title="BEST Local SEO Orlando | Google Maps, GBP & Website SEO Near Me | Rankelo",
     desc="Rankelo helps Orlando businesses improve visibility in Google Maps and local search through Google Business "
-         "Profile, website SEO, citations, and tailored Local SEO campaigns. Starting at $750.",
+         "Profile, website SEO, citations, and tailored Local SEO campaigns. Starting at $749.",
     crumb="Local SEO Campaign",
     # 1. HERO
     eyebrow="Local SEO Campaign",
     h1="Local SEO for Orlando Businesses",
     sub="Improve your visibility across Google Maps and local search so more nearby customers can find your business "
         "when they are looking for the services you offer.",
-    price_label="Starting at", price="$750",
+    price_label="Starting at", price="$749",
     cta1="Get a Free Local SEO Audit", cta2="See What’s Included",
     note="We’ll review your current local visibility, website, Google Business Profile, and competition before "
          "recommending the right scope for your business.",
@@ -137,7 +137,7 @@ P = dict(
          "No. The initial Local SEO Campaign is separate from ongoing SEO Maintenance. Monthly support is optional "
          "after the campaign."),
         ("How much does Local SEO cost?",
-         "Our Local SEO Campaigns start at $750. Final pricing depends on your current website, competition, service "
+         "Our Local SEO Campaigns start at $749. Final pricing depends on your current website, competition, service "
          "area, and the amount of work required."),
         ("Do you only work with businesses in Orlando?",
          "Orlando is our primary local market. If your business serves a nearby Central Florida area, we can review "

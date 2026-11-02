@@ -72,7 +72,7 @@ HOME = dict(
     svc_lead="Start with the service that fits your current situation. We’ll review your website, Google Business "
              "Profile, competition, and local market before confirming the final scope.",
     offers=[
-        dict(t="Local SEO Campaign", featured=True, price="$750", unit="",
+        dict(t="Local SEO Campaign", featured=True, price="$749", unit="",
              d="Improve your visibility across Google Maps and local search through Google Business Profile "
                "optimization, website SEO, citations, rank tracking, and additional local SEO work when your market "
                "requires it.",
@@ -81,10 +81,10 @@ HOME = dict(
              d="Improve how your business appears in Google Maps with a properly optimized profile, categories, "
                "services, and business information.",
              cta="Explore GBP Optimization", href="services/google-business-profile/", pick="gbp"),
-        dict(t="Website + Local SEO", featured=False, price="$1,500", unit="",
+        dict(t="Website + Local SEO", featured=False, price="$1,999", unit="",
              d="A professional local business website built around your services, location, conversions, and local "
                "search visibility from the start.",
-             cta="Explore Website + Local SEO", href="services/#web", pick="site"),
+             cta="Explore Website + Local SEO", href="services/website-local-seo/", pick="site"),
         dict(t="SEO Maintenance", featured=False, price="$399", unit="/month",
              d="Optional ongoing support after your initial campaign to monitor rankings, maintain your local search "
                "presence, handle smaller SEO updates, and keep an eye on competitors.",
@@ -113,7 +113,7 @@ HOME = dict(
          "No. Our initial Local SEO campaign is separate from ongoing SEO. After the campaign, you can stop or "
          "continue with optional monthly SEO Maintenance."),
         ("How much does Local SEO cost?",
-         "Our Local SEO campaigns start at $750. Final pricing depends on your website, competition, service area, "
+         "Our Local SEO campaigns start at $749. Final pricing depends on your website, competition, service area, "
          "and the amount of work required. We review your business first and provide a clear quote before starting."),
         ("Can you guarantee that I will rank #1?",
          "No agency can control Google’s rankings or guarantee a permanent #1 position. Our goal is to improve your "
