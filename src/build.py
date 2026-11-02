@@ -19,6 +19,7 @@ import services_hub
 import maintenance
 import about_page
 import es_pages
+import faq_page
 import service_page
 
 SITE = (sys.argv[1] if len(sys.argv) > 1 else "https://rankelo.org").rstrip("/")
@@ -26,7 +27,7 @@ KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
 SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "21"  # cache-buster for css/js
+VER = "22"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
@@ -551,6 +552,18 @@ FREE_AUDIT = dict(
 )
 
 
+def page_faq(lang):
+    P = faq_page.EN if lang == "en" else faq_page.ES
+    url = path(lang, "faq")
+    alts = {l: path(l, "faq") for l in LANGS}
+    crumbs = [(T[lang]["home"], path(lang, "home")), (P["eb"], url)]
+    hero = page_hero(lang, P["eb"], P["h1"], P["lead"], crumbs)
+    body = f'<main id="main">{hero}{faq_page.render(e, P, path(lang, "contact"))}</main>'
+    qa = [(q, faq_page.answer_text(a, x)) for _, qs in P["groups"] for q, a, x in qs]
+    ld = ld_graph(lang, url, P["title"], P["desc"], crumbs=crumbs, extra=[faq_ld(url, lang, qa)])
+    return url, alts, head(lang, P["title"], P["desc"], url, alts, ld, og_for(lang)) + header(lang, "faq", alts) + body + footer(lang) + i18n_script(lang)
+
+
 def page_free_audit(lang):
     from urllib.parse import quote
     F = FREE_AUDIT if lang == "en" else es_pages.FREE_AUDIT
@@ -778,7 +791,7 @@ def main():
         pages.append(simple_page(lang, "industries", body_industries))
         pages.append(simple_page(lang, "pricing", body_pricing, extra_ld=[lambda u, l: faq_ld(u, l, FAQ[l][2][1])]))
         pages.append(page_about(lang))
-        pages.append(simple_page(lang, "faq", body_faq, extra_ld=[faq_all_ld]))
+        pages.append(page_faq(lang))
         pages.append(page_free_audit(lang))
         for n in NICHES:
             pages.append(page_niche(lang, n))

@@ -702,6 +702,10 @@ a.fa-c:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 14
 .fa-c b{font-size:1.08rem;font-weight:700;word-break:break-word}
 .fa-c i{grid-column:2;font-style:normal;font-size:.85rem;color:var(--gold-deep);font-weight:600}
 @media (max-width:860px){.fa-contacts{grid-template-columns:1fr}}
+.faq h2.faq-cat{font:600 .74rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:2rem 0 .5rem}
+.faq h2.faq-cat:first-child{margin-top:0}
+.faq .faq-ticks{margin:.2rem 0 .6rem}
+.faq details .link{display:inline-flex}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
