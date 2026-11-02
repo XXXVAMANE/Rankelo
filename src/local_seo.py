@@ -159,7 +159,12 @@ P = dict(
 )
 
 
+
+_P = P  # English copy; Spanish comes in via ctx["P"]
+
 def render(ctx):
+    P = ctx.get("P") or _P
+    lang = ctx.get("lang", "en")
     """ctx: e, icon, h1, faq_items, form, pack, crumbs_html, crumbs, home (homepage dict, for form options)."""
     e, icon = ctx["e"], ctx["icon"]
     arr = '<span class="arr" aria-hidden="true">→</span>'
@@ -173,7 +178,7 @@ def render(ctx):
     H = ctx["home"]
     final_side = ("".join(f'<p class="lead">{e(p)}</p>' for p in P["final_p"])
                   + f'<p class="final-small">{e(P["final_small"])}</p>')
-    form_html = ctx["form"]("en", h2=P["final_h"], side_extra=final_side, sec_id="audit", audit=dict(
+    form_html = ctx["form"](lang, h2=P["final_h"], side_extra=final_side, sec_id="audit", audit=dict(
         services=H["form_services"], service_label=H["form_service_label"], msg_label=H["form_msg_label"],
         submit=P["final_cta"], selected="seo"))
     return f"""<main id="main">

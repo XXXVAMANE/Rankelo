@@ -18,6 +18,7 @@ import website_seo
 import services_hub
 import maintenance
 import about_page
+import es_pages
 import service_page
 
 SITE = (sys.argv[1] if len(sys.argv) > 1 else "https://rankelo.org").rstrip("/")
@@ -25,7 +26,7 @@ KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
 SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "20"  # cache-buster for css/js
+VER = "21"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
@@ -376,17 +377,17 @@ def og_for(lang):
 
 # ------------------------------------------------------------------ pages
 def page_home_v2(lang):
-    H = home_v2.HOME
+    H = home_v2.HOME if lang == "en" else es_pages.HOME
     url = path(lang, "home")
     alts = {l: path(l, "home") for l in LANGS}
-    ctx = dict(e=e, path=path, icon=icon, h1=h1, faq_items=faq_items, form=form, pack=pack(lang, seq_for(lang, NICHES)))
+    ctx = dict(e=e, path=path, icon=icon, h1=h1, faq_items=faq_items, form=form, H=H, pack=pack(lang, seq_for(lang, NICHES)))
     body = home_v2.render(lang, ctx)
     ld = ld_graph(lang, url, H["title"], H["desc"], extra=[faq_ld(url, lang, H["faq"])])
     return url, alts, head(lang, H["title"], H["desc"], url, alts, ld, og_for(lang)) + header(lang, "home", alts) + body + footer(lang) + i18n_script(lang)
 
 
 def page_home(lang):
-    if lang == "en":
+    if lang in ("en", "es"):
         return page_home_v2(lang)
     tx, P = T[lang], PAGES[lang]["home"]
     url = path(lang, "home")
@@ -521,17 +522,21 @@ def body_contact(lang, P):
     return form(lang, h2=P["next_h"], steps=P["next"], side_extra=info, sec_id="form")
 
 
-def page_about_en():
-    P, url = about_page.P, about_page.URL
-    crumbs = [(T["en"]["home"], path("en", "home")), ("About", url)]
-    body = about_page.render(dict(e=e, audit_url=path("en", "contact")))
-    ld = ld_graph("en", url, P["title"], P["desc"], crumbs=crumbs,
+def page_about(lang):
+    P = about_page.P if lang == "en" else es_pages.ABOUT
+    url = path(lang, "about")
+    crumbs = [(T[lang]["home"], path(lang, "home")), (P.get("crumb", "About"), url)]
+    body = about_page.render(dict(e=e, audit_url=path(lang, "contact"), P=P, lang=lang))
+    ld = ld_graph(lang, url, P["title"], P["desc"], crumbs=crumbs,
                   extra=[{"@type": "AboutPage", "url": f"{SITE}{url}", "about": {"@id": f"{SITE}/#business"}}])
     alts = {l: path(l, "about") for l in LANGS}
-    return url, alts, head("en", P["title"], P["desc"], url, alts, ld, og_for("en")) + header("en", "about", alts) + body + footer("en") + i18n_script("en")
+    return url, alts, head(lang, P["title"], P["desc"], url, alts, ld, og_for(lang)) + header(lang, "about", alts) + body + footer(lang) + i18n_script(lang)
 
 
 FREE_AUDIT = dict(
+    crumb_home="Home", crumb="Free Audit",
+    email_l="Email us", email_cta="Write to us →", mail_subject="Question for Rankelo",
+    phone_l="Call us", phone_cta="Tap to call →", hours_l="Hours", submit="Send my request",
     title="Free Local SEO Audit | Contact Rankelo in Orlando",
     desc="Request a free Local SEO audit or ask a question. Email contact@rankelo.org or call +1 (321) 616-0799. "
          "We review your Google Business Profile, website and competitors and reply within 24 hours.",
@@ -546,66 +551,71 @@ FREE_AUDIT = dict(
 )
 
 
-def page_free_audit():
-    F, url = FREE_AUDIT, path("en", "contact")
-    crumbs = [(T["en"]["home"], path("en", "home")), ("Free Audit", url)]
+def page_free_audit(lang):
+    from urllib.parse import quote
+    F = FREE_AUDIT if lang == "en" else es_pages.FREE_AUDIT
+    url = path(lang, "contact")
+    crumbs = [(T[lang]["home"], path(lang, "home")), (F["crumb"], url)]
     tel_display = "+1 " + PHONE_DISPLAY
     contacts = f"""<div class="fa-contacts">
-  <a class="fa-c reveal" href="mailto:{EMAIL}?subject=Question%20for%20Rankelo"><span class="ico">{icon('chat')}</span><small>Email us</small><b>{EMAIL}</b><i>Write to us →</i></a>
-  <a class="fa-c reveal" href="tel:{PHONE_E164}"><span class="ico">{icon('phone')}</span><small>Call us</small><b>{tel_display}</b><i>Tap to call →</i></a>
-  <div class="fa-c reveal"><span class="ico">{icon('maps')}</span><small>Hours</small><b>{e(T['en']['hours'])}</b><i style="color:var(--muted);font-weight:500">{e(', '.join(AREAS))}, FL</i></div>
+  <a class="fa-c reveal" href="mailto:{EMAIL}?subject={quote(F['mail_subject'])}"><span class="ico">{icon('chat')}</span><small>{e(F['email_l'])}</small><b>{EMAIL}</b><i>{e(F['email_cta'])}</i></a>
+  <a class="fa-c reveal" href="tel:{PHONE_E164}"><span class="ico">{icon('phone')}</span><small>{e(F['phone_l'])}</small><b>{tel_display}</b><i>{e(F['phone_cta'])}</i></a>
+  <div class="fa-c reveal"><span class="ico">{icon('maps')}</span><small>{e(F['hours_l'])}</small><b>{e(T[lang]['hours'])}</b><i style="color:var(--muted);font-weight:500">{e(', '.join(AREAS))}, FL</i></div>
 </div>"""
     hero = f"""<div class="phero"><div class="hero-bg"><div class="glow"></div></div><div class="wrap">
-  <nav class="scrumbs in" style="--i:0" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">→</span><span aria-current="page">Free Audit</span></nav>
+  <nav class="scrumbs in" style="--i:0" aria-label="Breadcrumb"><a href="{path(lang, 'home')}">{e(F['crumb_home'])}</a><span aria-hidden="true">→</span><span aria-current="page">{e(F['crumb'])}</span></nav>
   <p class="eyebrow in" style="--i:1">{e(F['eyebrow'])}</p>
   <h1 class="in" style="--i:1;max-width:22ch">{e(F['h1'])}</h1>
   <p class="lead in" style="--i:2">{e(F['lead'])}</p>
   {contacts}
 </div></div>"""
-    H = home_v2.HOME
+    H = home_v2.HOME if lang == "en" else es_pages.HOME
     steps = '<p class="eyebrow" style="margin-top:1.5rem">' + e(F["steps_h"]) + '</p><ol class="olist">' + "".join(f"<li>{e(s)}</li>" for s in F["steps"]) + "</ol>"
-    frm = form("en", h2=F["form_h"], side_extra=steps, sec_id="audit", audit=dict(
+    frm = form(lang, h2=F["form_h"], side_extra=steps, sec_id="audit", audit=dict(
         services=H["form_services"], service_label=H["form_service_label"], msg_label=H["form_msg_label"],
-        submit="Send my request"))
+        submit=F["submit"]))
     body = f'<main id="main">{hero}<div class="final-cta">{frm}</div></main>'
     contact_ld = {"@type": "ContactPage", "url": f"{SITE}{url}", "about": {"@id": f"{SITE}/#business"}}
-    ld = ld_graph("en", url, F["title"], F["desc"], crumbs=crumbs, extra=[contact_ld])
+    ld = ld_graph(lang, url, F["title"], F["desc"], crumbs=crumbs, extra=[contact_ld])
     alts = {l: path(l, "contact") for l in LANGS}
-    return url, alts, head("en", F["title"], F["desc"], url, alts, ld, og_for("en")) + header("en", "contact", alts) + body + footer("en") + i18n_script("en")
+    return url, alts, head(lang, F["title"], F["desc"], url, alts, ld, og_for(lang)) + header(lang, "contact", alts) + body + footer(lang) + i18n_script(lang)
 
 
-def page_services_hub():
-    P, url = services_hub.P, services_hub.URL
-    crumbs = [(T["en"]["home"], path("en", "home")), (T["en"]["nav"][0][1], url)]
-    ctx = dict(e=e, icon=icon, faq_items=faq_items, form=form, home=home_v2.HOME)
+def page_services_hub(lang):
+    P = services_hub.P if lang == "en" else es_pages.HUB
+    url = path(lang, "services")
+    crumbs = [(T[lang]["home"], path(lang, "home")), (T[lang]["nav"][0][1], url)]
+    ctx = dict(e=e, icon=icon, faq_items=faq_items, form=form, home=home_v2.HOME if lang == "en" else es_pages.HOME,
+               P=P, lang=lang)
     body = services_hub.render(ctx)
     items = [{"@type": "ListItem", "position": i + 1, "item": {
         "@type": "Service", "name": sv["t"], "description": sv["out"], "provider": {"@id": f"{SITE}/#business"},
         "url": f"{SITE}{sv['href']}" if sv["href"].startswith("/") else f"{SITE}{url}#{sv['id']}",
         "offers": {"@type": "Offer", "priceCurrency": "USD", "price": sv["price"].strip("$").replace(",", "")}}}
         for i, sv in enumerate(P["services"])]
-    ld = ld_graph("en", url, P["title"], P["desc"], crumbs=crumbs,
-                  extra=[{"@type": "ItemList", "name": "Rankelo services", "itemListElement": items}, faq_ld(url, "en", P["faq"])])
+    ld = ld_graph(lang, url, P["title"], P["desc"], crumbs=crumbs,
+                  extra=[{"@type": "ItemList", "name": "Rankelo services", "itemListElement": items}, faq_ld(url, lang, P["faq"])])
     alts = {l: path(l, "services") for l in LANGS}
-    return url, alts, head("en", P["title"], P["desc"], url, alts, ld, og_for("en")) + header("en", "services", alts) + body + footer("en") + i18n_script("en")
+    return url, alts, head(lang, P["title"], P["desc"], url, alts, ld, og_for(lang)) + header(lang, "services", alts) + body + footer(lang) + i18n_script(lang)
 
 
-def page_service(mod, name, service_type, price):
-    """English-only service page built from a content module (local_seo, gbp, ...)."""
-    P, url = mod.P, mod.URL
-    crumbs = [(T["en"]["home"], path("en", "home")), (T["en"]["nav"][0][1], path("en", "services")), (P["crumb"], url)]
+def page_service(mod, es_copy, lang, name, service_type, price):
+    """Service page built from a content module (local_seo, gbp, ...); es_copy is its Spanish copy dict."""
+    P = mod.P if lang == "en" else es_copy
+    url = mod.URL if lang == "en" else es_copy["url"]
+    alts = {"en": mod.URL, "es": es_copy["url"]}
+    crumbs = [(T[lang]["home"], path(lang, "home")), (T[lang]["nav"][0][1], path(lang, "services")), (P["crumb"], url)]
     ctx = dict(e=e, icon=icon, h1=h1, faq_items=faq_items, form=form, crumbs_html=crumbs_html, crumbs=crumbs,
-               crumb_items=crumbs[1:], home=home_v2.HOME, pack=pack("en", seq_for("en", NICHES)))
+               crumb_items=crumbs[1:], home=home_v2.HOME if lang == "en" else es_pages.HOME,
+               pack=pack(lang, seq_for(lang, NICHES)), P=P, lang=lang)
     body = mod.render(ctx)
-    service_ld = {"@type": "Service", "@id": f"{SITE}{url}#service", "name": name, "serviceType": service_type,
+    service_ld = {"@type": "Service", "@id": f"{SITE}{url}#service", "name": P.get("pr_h", name), "serviceType": service_type,
                   "description": P["desc"], "provider": {"@id": f"{SITE}/#business"},
                   "areaServed": [{"@type": "City", "name": "Orlando, FL"}], "url": f"{SITE}{url}",
                   "offers": {"@type": "Offer", "priceCurrency": "USD", "price": price,
                              "priceSpecification": {"@type": "PriceSpecification", "minPrice": price, "priceCurrency": "USD"}}}
-    ld = ld_graph("en", url, P["title"], P["desc"], crumbs=crumbs, extra=[service_ld, faq_ld(url, "en", P["faq"])])
-    alts = {"en": url}  # English only for now
-    hdr_alts = {"en": url, "es": path("es", "services")}
-    return url, alts, head("en", P["title"], P["desc"], url, alts, ld, og_for("en")) + header("en", "services", hdr_alts) + body + footer("en") + i18n_script("en")
+    ld = ld_graph(lang, url, P["title"], P["desc"], crumbs=crumbs, extra=[service_ld, faq_ld(url, lang, P["faq"])])
+    return url, alts, head(lang, P["title"], P["desc"], url, alts, ld, og_for(lang)) + header(lang, "services", alts) + body + footer(lang) + i18n_script(lang)
 
 
 def page_niche(lang, n):
@@ -764,18 +774,18 @@ def main():
     pages = []
     for lang in LANGS:
         pages.append(page_home(lang))
-        pages.append(page_services_hub() if lang == "en" else simple_page(lang, "services", body_services))
+        pages.append(page_services_hub(lang))
         pages.append(simple_page(lang, "industries", body_industries))
         pages.append(simple_page(lang, "pricing", body_pricing, extra_ld=[lambda u, l: faq_ld(u, l, FAQ[l][2][1])]))
-        pages.append(page_about_en() if lang == "en" else simple_page(lang, "about", body_about))
+        pages.append(page_about(lang))
         pages.append(simple_page(lang, "faq", body_faq, extra_ld=[faq_all_ld]))
-        pages.append(page_free_audit() if lang == "en" else simple_page(lang, "contact", body_contact))
+        pages.append(page_free_audit(lang))
         for n in NICHES:
             pages.append(page_niche(lang, n))
-    pages.append(page_service(local_seo, "Local SEO Campaign", "Local SEO", "749"))
-    pages.append(page_service(gbp, "Google Business Profile Optimization", "Google Business Profile optimization", "299"))
-    pages.append(page_service(maintenance, "SEO Maintenance", "Local SEO maintenance", "399"))
-    pages.append(page_service(website_seo, "Website + Local SEO", "Local SEO website design", "1999"))
+        pages.append(page_service(local_seo, es_pages.LOCAL, lang, "Local SEO Campaign", "Local SEO", "749"))
+        pages.append(page_service(gbp, es_pages.GBP, lang, "Google Business Profile Optimization", "Google Business Profile optimization", "299"))
+        pages.append(page_service(website_seo, es_pages.WEB, lang, "Website + Local SEO", "Local SEO website design", "1999"))
+        pages.append(page_service(maintenance, es_pages.MAINT, lang, "SEO Maintenance", "Local SEO maintenance", "399"))
     seen = {}
     for url, alts, doc in pages:
         d = OUT / url.strip("/")
@@ -795,7 +805,8 @@ def main():
     (OUT / "_redirects").write_text(
         "/ru /es/ 301\n/ru/ /es/ 301\n/ru/* /es/ 301\n"
         "/local-seo-for-plumbers /local-seo-for-restaurants/ 301\n/local-seo-for-plumbers/ /local-seo-for-restaurants/ 301\n"
-        "/contact /free-audit/ 301\n/contact/ /free-audit/ 301\n")
+        "/contact /free-audit/ 301\n/contact/ /free-audit/ 301\n"
+        "/es/contacto /es/auditoria-gratis/ 301\n/es/contacto/ /es/auditoria-gratis/ 301\n")
     (OUT / "404.html").write_text(page_404())
     icons_out()
     og_image("en", "og-image.png")

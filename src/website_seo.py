@@ -180,19 +180,30 @@ P = dict(
 )
 
 
-def site_mock():
+SITE_MOCK = dict(
+    en=dict(aria="Example structure of an SEO-ready local business website", url="yourbusiness.com", home="Homepage",
+            services="Services", about="About", contact="Contact", svc="Service", svc_l="Service pages",
+            area_l="Service areas", tag="Example structure"),
+    es=dict(aria="Ejemplo de estructura de un sitio web local listo para SEO", url="sunegocio.com", home="Inicio",
+            services="Servicios", about="Nosotros", contact="Contacto", svc="Servicio", svc_l="Páginas de servicio",
+            area_l="Zonas de servicio", tag="Estructura de ejemplo"),
+)
+
+
+def site_mock(lang="en"):
     """Illustrative site structure inside a browser frame (generic pages, no real business)."""
+    m = SITE_MOCK[lang]
     node = lambda t, cls="", d=0: f'<span class="sm-node {cls}" style="--d:{d}">{t}</span>'
-    return f"""<div class="smock" role="img" aria-label="Example structure of an SEO-ready local business website">
-  <div class="sm-bar"><span></span><span></span><span></span><b>yourbusiness.com</b></div>
+    return f"""<div class="smock" role="img" aria-label="{m['aria']}">
+  <div class="sm-bar"><span></span><span></span><span></span><b>{m['url']}</b></div>
   <div class="sm-body">
-    <div class="sm-row sm-top">{node('Homepage', 'home', 0)}</div>
-    <div class="sm-row sm-mid">{node('Services', 'hub', 1)}{node('About', '', 2)}{node('Contact', 'cta', 3)}</div>
-    <div class="sm-row sm-leaf">{node('Service A', 'svc', 4)}{node('Service B', 'svc', 5)}{node('Service C', 'svc', 6)}</div>
+    <div class="sm-row sm-top">{node(m['home'], 'home', 0)}</div>
+    <div class="sm-row sm-mid">{node(m['services'], 'hub', 1)}{node(m['about'], '', 2)}{node(m['contact'], 'cta', 3)}</div>
+    <div class="sm-row sm-leaf">{node(m['svc'] + ' A', 'svc', 4)}{node(m['svc'] + ' B', 'svc', 5)}{node(m['svc'] + ' C', 'svc', 6)}</div>
     <div class="sm-row sm-area">{node('Orlando', 'area', 7)}{node('Winter Park', 'area', 8)}{node('Kissimmee', 'area', 9)}</div>
-    <div class="sm-legend"><span><i class="k k-svc"></i>Service pages</span><span><i class="k k-area"></i>Service areas</span></div>
+    <div class="sm-legend"><span><i class="k k-svc"></i>{m['svc_l']}</span><span><i class="k k-area"></i>{m['area_l']}</span></div>
   </div>
-  <span class="gm-tag">Example structure</span>
+  <span class="gm-tag">{m['tag']}</span>
 </div>"""
 
 
@@ -236,7 +247,12 @@ CSS = """
 """
 
 
+
+_P = P  # English copy; Spanish comes in via ctx["P"]
+
 def render(ctx):
+    P = ctx.get("P") or _P
+    lang = ctx.get("lang", "en")
     e, icon = ctx["e"], ctx["icon"]
     arr = '<span class="arr" aria-hidden="true">→</span>'
     paras = lambda ps: "".join(f"<p>{e(p)}</p>" for p in ps)
@@ -248,11 +264,11 @@ def render(ctx):
     H = ctx["home"]
     final_side = ("".join(f'<p class="lead">{e(p)}</p>' for p in P["final_p"])
                   + f'<p class="final-small">{e(P["final_small"])}</p>')
-    form_html = ctx["form"]("en", h2=P["final_h"], side_extra=final_side, sec_id="audit", audit=dict(
+    form_html = ctx["form"](lang, h2=P["final_h"], side_extra=final_side, sec_id="audit", audit=dict(
         services=H["form_services"], service_label=H["form_service_label"], msg_label=H["form_msg_label"],
         submit=P["final_cta"], selected="site"))
     return f"""<main id="main">
-{sp.hero(ctx, P, site_mock(), ctx['crumb_items'])}
+{sp.hero(ctx, P, site_mock(lang), ctx['crumb_items'])}
 <section id="results"><div class="wrap">
   <div class="sec-head reveal"><h2>{e(P['res_h'])}</h2>{''.join(f'<p class="lead">{e(p)}</p>' for p in P['res_lead'])}</div>
   <div class="why">{cards(P['res_items'])}</div>

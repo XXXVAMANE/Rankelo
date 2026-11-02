@@ -155,7 +155,12 @@ P = dict(
 )
 
 
+
+_P = P  # English copy; Spanish comes in via ctx["P"]
+
 def render(ctx):
+    P = ctx.get("P") or _P
+    lang = ctx.get("lang", "en")
     e, icon = ctx["e"], ctx["icon"]
     arr = '<span class="arr" aria-hidden="true">→</span>'
     paras = lambda ps: "".join(f"<p>{e(p)}</p>" for p in ps)
@@ -165,11 +170,11 @@ def render(ctx):
     H = ctx["home"]
     final_side = ("".join(f'<p class="lead">{e(p)}</p>' for p in P["final_p"])
                   + f'<p class="final-small">{e(P["final_small"])}</p>')
-    form_html = ctx["form"]("en", h2=P["final_h"], side_extra=final_side, sec_id="audit", audit=dict(
+    form_html = ctx["form"](lang, h2=P["final_h"], side_extra=final_side, sec_id="audit", audit=dict(
         services=H["form_services"], service_label=H["form_service_label"], msg_label=H["form_msg_label"],
         submit=P["final_cta"], selected="gbp"))
     return f"""<main id="main">
-{sp.hero(ctx, P, sp.gbp_mock(), ctx['crumb_items'])}
+{sp.hero(ctx, P, sp.gbp_mock(lang), ctx['crumb_items'])}
 <section id="results"><div class="wrap">
   <div class="sec-head reveal"><h2>{e(P['res_h'])}</h2>{''.join(f'<p class="lead">{e(p)}</p>' for p in P['res_lead'])}</div>
   <div class="why">{cards(P['res_items'])}</div>

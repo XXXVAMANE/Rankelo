@@ -53,7 +53,12 @@ P = dict(
 )
 
 
+
+_P = P  # English copy; Spanish comes in via ctx["P"]
+
 def render(ctx):
+    P = ctx.get("P") or _P
+    lang = ctx.get("lang", "en")
     e = ctx["e"]
     audit = ctx["audit_url"]
     arr = '<span class="arr" aria-hidden="true">→</span>'
@@ -64,7 +69,7 @@ def render(ctx):
                    for t, d, c, h in P["services"])
     return f"""<main id="main">
 <div class="ahero"><div class="wrap">
-  <nav class="scrumbs in" style="--i:0" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">→</span><span aria-current="page">About</span></nav>
+  <nav class="scrumbs in" style="--i:0" aria-label="Breadcrumb"><a href="{P.get('home_href', '/')}">{e(P.get('crumb_home', 'Home'))}</a><span aria-hidden="true">→</span><span aria-current="page">{e(P.get('crumb', 'About'))}</span></nav>
   <p class="eyebrow in" style="--i:1">{e(P['eyebrow'])}</p>
   <h1 class="in" style="--i:1">{e(P['h1'])}</h1>
   <p class="ahero-sub in" style="--i:2">{e(P['sub'])}</p>
@@ -82,7 +87,7 @@ def render(ctx):
 <section id="help"><div class="wrap">
   <div class="sec-head reveal"><h2>{e(P['help_h'])}</h2><p class="lead">{e(P['help_p'])}</p></div>
   <div class="arows">{svcs}</div>
-  <a class="link" style="margin-top:1.75rem" href="/services/">{e(P['all_cta'])} {arr}</a>
+  <a class="link" style="margin-top:1.75rem" href="{P.get('all_href', '/services/')}">{e(P['all_cta'])} {arr}</a>
 </div></section>
 <section class="alt" id="local"><div class="wrap ed">
   <h2 class="reveal">{e(P['local_h'])}</h2>

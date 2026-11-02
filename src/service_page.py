@@ -54,8 +54,23 @@ def price_panel(ctx, P, eb, h, paras, cta, small):
 </div></section>"""
 
 
-def gbp_mock():
+GBP_MOCK = dict(
+    en=dict(aria="Example of an optimized Google Business Profile", name="Your Business Name",
+            cat="Roofing contractor · Orlando, FL", acts=["Call", "Directions", "Website", "Save"],
+            area="Orlando, FL · Serves Central Florida", open="Open", closes="Closes 6 PM", svc="Services",
+            chips=["Roof repair", "Roof replacement", "Inspections", "Storm damage"],
+            meter="Profile completeness", tag="Example profile"),
+    es=dict(aria="Ejemplo de un perfil de Google Business optimizado", name="Nombre de su negocio",
+            cat="Contratista de techos · Orlando, FL", acts=["Llamar", "Cómo llegar", "Sitio web", "Guardar"],
+            area="Orlando, FL · Atiende el centro de Florida", open="Abierto", closes="Cierra a las 6 PM", svc="Servicios",
+            chips=["Reparación de techos", "Techos nuevos", "Inspecciones", "Daños por tormenta"],
+            meter="Perfil completo", tag="Perfil de ejemplo"),
+)
+
+
+def gbp_mock(lang="en"):
     """Illustrative Google Business Profile card (generic, no real business)."""
+    m = GBP_MOCK[lang]
     star = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>'
     act = lambda ico, t: f'<span class="gm-act"><span>{ico}</span>{t}</span>'
     i = lambda d: f'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{d}</svg>'
@@ -67,25 +82,25 @@ def gbp_mock():
     clock = i('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')
     phone = i('<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>')
     chk = '<span class="gm-ok" aria-hidden="true"></span>'
-    return f"""<div class="gmock" role="img" aria-label="Example of an optimized Google Business Profile">
+    return f"""<div class="gmock" role="img" aria-label="{m['aria']}">
   <div class="gm-photos"><span></span><span></span><span></span></div>
   <div class="gm-body">
     <div class="gm-head">
-      <b class="gm-name">Your Business Name</b>
+      <b class="gm-name">{m['name']}</b>
       <span class="gm-rate">4.9 <span class="gm-stars">{star*5}</span> <span class="gm-muted">(128)</span></span>
-      <span class="gm-cat">Roofing contractor · Orlando, FL {chk}</span>
+      <span class="gm-cat">{m['cat']} {chk}</span>
     </div>
-    <div class="gm-acts">{act(call, 'Call')}{act(dirs, 'Directions')}{act(web, 'Website')}{act(save, 'Save')}</div>
+    <div class="gm-acts">{act(call, m['acts'][0])}{act(dirs, m['acts'][1])}{act(web, m['acts'][2])}{act(save, m['acts'][3])}</div>
     <ul class="gm-info">
-      <li>{pin}<span>Orlando, FL · Serves Central Florida</span>{chk}</li>
-      <li>{clock}<span><b class="gm-open">Open</b> · Closes 6 PM</span>{chk}</li>
+      <li>{pin}<span>{m['area']}</span>{chk}</li>
+      <li>{clock}<span><b class="gm-open">{m['open']}</b> · {m['closes']}</span>{chk}</li>
       <li>{phone}<span>(407) 555-0100</span>{chk}</li>
     </ul>
-    <div class="gm-svc"><small>Services</small>
-      <div><span>Roof repair</span><span>Roof replacement</span><span>Inspections</span><span>Storm damage</span></div></div>
-    <div class="gm-meter"><div class="gm-meter-top"><small>Profile completeness</small><b>100%</b></div><div class="gm-bar"><span></span></div></div>
+    <div class="gm-svc"><small>{m['svc']}</small>
+      <div>{''.join(f'<span>{c}</span>' for c in m['chips'])}</div></div>
+    <div class="gm-meter"><div class="gm-meter-top"><small>{m['meter']}</small><b>100%</b></div><div class="gm-bar"><span></span></div></div>
   </div>
-  <span class="gm-tag">Example profile</span>
+  <span class="gm-tag">{m['tag']}</span>
 </div>"""
 
 

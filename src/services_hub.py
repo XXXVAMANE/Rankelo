@@ -120,7 +120,12 @@ P = dict(
 )
 
 
+
+_P = P  # English copy; Spanish comes in via ctx["P"]
+
 def render(ctx):
+    P = ctx.get("P") or _P
+    lang = ctx.get("lang", "en")
     e, icon = ctx["e"], ctx["icon"]
     arr = '<span class="arr" aria-hidden="true">→</span>'
     paras = lambda ps: "".join(f"<p>{e(p)}</p>" for p in ps)
@@ -156,11 +161,11 @@ def render(ctx):
     H = ctx["home"]
     final_side = ("".join(f'<p class="lead">{e(p)}</p>' for p in P["final_p"])
                   + f'<p class="final-small">{e(P["final_small"])}</p>')
-    form_html = ctx["form"]("en", h2=P["final_h"], side_extra=final_side, sec_id="audit", audit=dict(
+    form_html = ctx["form"](lang, h2=P["final_h"], side_extra=final_side, sec_id="audit", audit=dict(
         services=H["form_services"], service_label=H["form_service_label"], msg_label=H["form_msg_label"],
         submit=P["final_cta"], selected="unsure"))
-    crumbs = ('<nav class="scrumbs in" style="--i:0" aria-label="Breadcrumb"><a href="/">Home</a>'
-              '<span aria-hidden="true">→</span><span aria-current="page">Services</span></nav>')
+    crumbs = (f'<nav class="scrumbs in" style="--i:0" aria-label="Breadcrumb"><a href="{P.get("home_href", "/")}">{e(P.get("crumb_home", "Home"))}</a>'
+              f'<span aria-hidden="true">→</span><span aria-current="page">{e(P.get("crumb", "Services"))}</span></nav>')
     return f"""<main id="main">
 <div class="hhero">
   <div class="wrap hhero-grid">
@@ -172,7 +177,7 @@ def render(ctx):
       <div class="hero-ctas in" style="--i:3"><a class="btn btn-dark shine" href="#audit" data-magnet><span>{e(P['cta'])}</span>{arr}</a></div>
       <p class="hero-note in" style="--i:4">{e(P['note'])}</p>
     </div>
-    <nav class="hx in" style="--i:2" aria-label="Services on this page">{index}</nav>
+    <nav class="hx in" style="--i:2" aria-label="{e(P.get('idx_aria', 'Services on this page'))}">{index}</nav>
   </div>
 </div>
 <section id="needs"><div class="wrap">

@@ -13,7 +13,7 @@ SLUGS = {
     "pricing":    dict(en="pricing/",    es="es/precios/"),
     "about":      dict(en="about/",      es="es/nosotros/"),
     "faq":        dict(en="faq/",        es="es/preguntas-frecuentes/"),
-    "contact":    dict(en="free-audit/", es="es/contacto/"),
+    "contact":    dict(en="free-audit/", es="es/auditoria-gratis/"),
 }
 
 T = {
@@ -61,10 +61,10 @@ T = {
     foot_company="Empresa", foot_services="Servicios", foot_industries="Industrias", foot_contact="Contacto",
     foot_contact_page="Contáctenos", hours="Lun–Vie, 9:00 – 20:00", areas_label="Zonas de servicio",
     rights="Todos los derechos reservados.",
-    svc_menu=[("Campaña de SEO local", "maps"), ("Google Business Profile", "gbp"), ("Sitios web listos para SEO", "web")],
+    svc_menu=[("Campaña de SEO local", "/es/servicios/seo-local/"), ("Perfil de Google Business", "/es/servicios/perfil-de-google-business/"), ("Sitios web listos para SEO", "/es/servicios/sitio-web-seo-local/"), ("Mantenimiento SEO", "/es/servicios/mantenimiento-seo/")],
     svc_all="Ver todos los servicios",
-    svc_links=[("Perfil de Google Business", "services", "gbp"), ("Posicionamiento en Google Maps", "services", "maps"),
-               ("Estrategia de reseñas", "services", "reviews"), ("Diseño web", "services", "web")],
+    svc_links=[("Campaña de SEO local", "/es/servicios/seo-local/", ""), ("Perfil de Google Business", "/es/servicios/perfil-de-google-business/", ""),
+               ("Sitio web + SEO local", "/es/servicios/sitio-web-seo-local/", ""), ("Mantenimiento SEO", "/es/servicios/mantenimiento-seo/", "")],
     meta_bar=["Primeros resultados en 2–3 semanas", "Respuesta en 24 horas", "Sin contratos a largo plazo"],
     f=dict(
         name="Su nombre", name_ph="Juan Pérez", company="Nombre del negocio", company_ph="Pérez Roofing",

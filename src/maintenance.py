@@ -117,26 +117,37 @@ P = dict(
 )
 
 
-def monitor_mock():
+MON_MOCK = dict(
+    en=dict(aria="Example of a monthly SEO maintenance check", vis="Local visibility", status="Monitored", live="Ongoing",
+            months=["Jan", "Feb", "Mar", "Apr", "May", "Jun"], check="This month’s check", tag="Example",
+            rows=["Local rankings reviewed", "Google Business Profile checked", "Website updates handled", "Local listings checked"]),
+    es=dict(aria="Ejemplo de una revisión mensual de mantenimiento SEO", vis="Visibilidad local", status="Monitoreada",
+            live="Continuo", months=["Ene", "Feb", "Mar", "Abr", "May", "Jun"], check="Revisión de este mes", tag="Ejemplo",
+            rows=["Posiciones locales revisadas", "Perfil de Google Business revisado", "Actualizaciones del sitio web hechas",
+                  "Listados locales revisados"]),
+)
+
+
+def monitor_mock(lang="en"):
     """Illustrative monthly monitoring card (example data only)."""
+    m = MON_MOCK[lang]
     pts = [(0, 64), (40, 58), (80, 50), (120, 46), (160, 40), (200, 38), (240, 33), (280, 30), (320, 29)]
     line = " ".join(f"{x},{y}" for x, y in pts)
     area = f"0,90 {line} 320,90"
     chk = '<span class="gm-ok" aria-hidden="true"></span>'
-    rows = [("Local rankings reviewed", 0), ("Google Business Profile checked", 1), ("Website updates handled", 2),
-            ("Local listings checked", 3)]
+    rows = [(t, i) for i, t in enumerate(m["rows"])]
     items = "".join(f'<li style="--d:{d}"><span>{t}</span>{chk}</li>' for t, d in rows)
-    return f"""<div class="mmock" role="img" aria-label="Example of a monthly SEO maintenance check">
-  <div class="mm-top"><div><small>Local visibility</small><b>Monitored</b></div><span class="mm-live"><i></i>Ongoing</span></div>
+    return f"""<div class="mmock" role="img" aria-label="{m['aria']}">
+  <div class="mm-top"><div><small>{m['vis']}</small><b>{m['status']}</b></div><span class="mm-live"><i></i>{m['live']}</span></div>
   <svg class="mm-chart" viewBox="0 0 320 90" preserveAspectRatio="none" aria-hidden="true">
     <defs><linearGradient id="mmg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FFB547" stop-opacity=".35"/><stop offset="1" stop-color="#FFB547" stop-opacity="0"/></linearGradient></defs>
     <path d="M0 30H320M0 60H320" stroke="#ECEBE6" stroke-width="1"/>
     <polygon points="{area}" fill="url(#mmg)"/>
     <polyline class="mm-line" points="{line}" fill="none" stroke="#0C0C0D" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" pathLength="1"/>
   </svg>
-  <div class="mm-months"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span></div>
-  <div class="mm-check"><small>This month’s check</small><ul>{items}</ul></div>
-  <span class="gm-tag">Example</span>
+  <div class="mm-months">{''.join(f'<span>{x}</span>' for x in m['months'])}</div>
+  <div class="mm-check"><small>{m['check']}</small><ul>{items}</ul></div>
+  <span class="gm-tag">{m['tag']}</span>
 </div>"""
 
 
@@ -167,7 +178,12 @@ CSS = """
 """
 
 
+
+_P = P  # English copy; Spanish comes in via ctx["P"]
+
 def render(ctx):
+    P = ctx.get("P") or _P
+    lang = ctx.get("lang", "en")
     e, icon = ctx["e"], ctx["icon"]
     arr = '<span class="arr" aria-hidden="true">→</span>'
     paras = lambda ps: "".join(f"<p>{e(p)}</p>" for p in ps)
@@ -177,11 +193,11 @@ def render(ctx):
     H = ctx["home"]
     final_side = ("".join(f'<p class="lead">{e(p)}</p>' for p in P["final_p"])
                   + f'<p class="final-small">{e(P["final_small"])}</p>')
-    form_html = ctx["form"]("en", h2=P["final_h"], side_extra=final_side, sec_id="audit", audit=dict(
+    form_html = ctx["form"](lang, h2=P["final_h"], side_extra=final_side, sec_id="audit", audit=dict(
         services=H["form_services"], service_label=H["form_service_label"], msg_label=H["form_msg_label"],
         submit=P["final_cta"], selected="maintenance"))
     return f"""<main id="main">
-{sp.hero(ctx, P, monitor_mock(), ctx['crumb_items'])}
+{sp.hero(ctx, P, monitor_mock(lang), ctx['crumb_items'])}
 <section id="why"><div class="wrap">
   <div class="problem">
     <div class="sec-head reveal" style="margin-bottom:0"><h2>{e(P['why_h'])}</h2></div>

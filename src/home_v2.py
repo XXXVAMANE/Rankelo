@@ -207,7 +207,7 @@ main:has(> section.alt:last-child) + footer.site{margin-top:0}
 
 def render(lang, ctx):
     """ctx: dict of helpers from build.py (e, path, icon, h1, faq_items, pack, form)."""
-    H = HOME
+    H = ctx.get("H") or HOME
     e, path = ctx["e"], ctx["path"]
     icon = ctx["icon"]
     arr = '<span class="arr" aria-hidden="true">→</span>'
