@@ -9,13 +9,15 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 HERE = Path(__file__).parent
 sys.path.insert(0, str(HERE))
-from content import T, SLUGS, SERVICES, PACKAGES, PKG_UI, STEPS, PROMISES, FAQ, PAGES, PATHS, PHONE_DISPLAY, PHONE_E164, AREAS
+from content import T, SLUGS, SERVICES, PACKAGES, PKG_UI, STEPS, PROMISES, FAQ, PAGES, PATHS, PHONE_DISPLAY, PHONE_E164, EMAIL, AREAS
 from niches_v2 import NICHES
 import home_v2
 import local_seo
 import gbp
 import website_seo
 import services_hub
+import maintenance
+import about_page
 import service_page
 
 SITE = (sys.argv[1] if len(sys.argv) > 1 else "https://rankelo.org").rstrip("/")
@@ -23,7 +25,7 @@ KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
 SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "18"  # cache-buster for css/js
+VER = "19"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
@@ -158,6 +160,7 @@ def footer(lang):
       <div><h4>{e(tx['foot_services'])}</h4><ul>{svc}</ul></div>
       <div><h4>{e(tx['foot_industries'])}</h4><ul>{ind}</ul></div>
       <div><h4>{e(tx['foot_contact'])}</h4><ul>
+        <li><a href="mailto:{EMAIL}">{EMAIL}</a></li>
         <li><a href="tel:{PHONE_E164}">{PHONE_DISPLAY}</a></li>
         <li>{e(tx['hours'])}</li>
         <li>{e(' · '.join(AREAS))}, FL</li>
@@ -324,7 +327,7 @@ def business_node():
     return {
         "@type": "ProfessionalService", "@id": f"{SITE}/#business", "name": "Rankelo",
         "url": f"{SITE}/", "logo": f"{SITE}/apple-touch-icon.png", "image": f"{SITE}/og-image.png",
-        "description": PAGES["en"]["home"]["desc"], "telephone": PHONE_E164,
+        "description": PAGES["en"]["home"]["desc"], "telephone": PHONE_E164, "email": EMAIL,
         "areaServed": [{"@type": "City", "name": f"{c}, FL"} for c in AREAS],
         "openingHoursSpecification": [{"@type": "OpeningHoursSpecification",
                                        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
@@ -516,6 +519,59 @@ def body_contact(lang, P):
   <div><small>{e(tx['areas_label'])}</small><span>{e(', '.join(AREAS))}, FL</span></div>
 </div>"""
     return form(lang, h2=P["next_h"], steps=P["next"], side_extra=info, sec_id="form")
+
+
+def page_about_en():
+    P, url = about_page.P, about_page.URL
+    crumbs = [(T["en"]["home"], path("en", "home")), ("About", url)]
+    body = about_page.render(dict(e=e, audit_url=path("en", "contact")))
+    ld = ld_graph("en", url, P["title"], P["desc"], crumbs=crumbs,
+                  extra=[{"@type": "AboutPage", "url": f"{SITE}{url}", "about": {"@id": f"{SITE}/#business"}}])
+    alts = {l: path(l, "about") for l in LANGS}
+    return url, alts, head("en", P["title"], P["desc"], url, alts, ld, og_for("en")) + header("en", "about", alts) + body + footer("en") + i18n_script("en")
+
+
+FREE_AUDIT = dict(
+    title="Free Local SEO Audit | Contact Rankelo in Orlando",
+    desc="Request a free Local SEO audit or ask a question. Email contact@rankelo.org or call +1 (321) 616-0799. "
+         "We review your Google Business Profile, website and competitors and reply within 24 hours.",
+    eyebrow="Free Local SEO Audit",
+    h1="Get your free local audit or ask a question",
+    lead="Tell us about your business. We’ll review your Google profile, website and competitors and reply within 24 hours.",
+    form_h="Tell us about your business",
+    steps=["We review your Google Business Profile, website and top competitors",
+           "We reply within 24 hours with what we found",
+           "If it’s a fit, we confirm the scope and a clear quote before any work begins"],
+    steps_h="What happens next",
+)
+
+
+def page_free_audit():
+    F, url = FREE_AUDIT, path("en", "contact")
+    crumbs = [(T["en"]["home"], path("en", "home")), ("Free Audit", url)]
+    tel_display = "+1 " + PHONE_DISPLAY
+    contacts = f"""<div class="fa-contacts">
+  <a class="fa-c reveal" href="mailto:{EMAIL}?subject=Question%20for%20Rankelo"><span class="ico">{icon('chat')}</span><small>Email us</small><b>{EMAIL}</b><i>Write to us →</i></a>
+  <a class="fa-c reveal" href="tel:{PHONE_E164}"><span class="ico">{icon('phone')}</span><small>Call us</small><b>{tel_display}</b><i>Tap to call →</i></a>
+  <div class="fa-c reveal"><span class="ico">{icon('maps')}</span><small>Hours</small><b>{e(T['en']['hours'])}</b><i style="color:var(--muted);font-weight:500">{e(', '.join(AREAS))}, FL</i></div>
+</div>"""
+    hero = f"""<div class="phero"><div class="hero-bg"><div class="glow"></div></div><div class="wrap">
+  <nav class="scrumbs in" style="--i:0" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">→</span><span aria-current="page">Free Audit</span></nav>
+  <p class="eyebrow in" style="--i:1">{e(F['eyebrow'])}</p>
+  <h1 class="in" style="--i:1;max-width:22ch">{e(F['h1'])}</h1>
+  <p class="lead in" style="--i:2">{e(F['lead'])}</p>
+  {contacts}
+</div></div>"""
+    H = home_v2.HOME
+    steps = '<p class="eyebrow" style="margin-top:1.5rem">' + e(F["steps_h"]) + '</p><ol class="olist">' + "".join(f"<li>{e(s)}</li>" for s in F["steps"]) + "</ol>"
+    frm = form("en", h2=F["form_h"], side_extra=steps, sec_id="audit", audit=dict(
+        services=H["form_services"], service_label=H["form_service_label"], msg_label=H["form_msg_label"],
+        submit="Send my request"))
+    body = f'<main id="main">{hero}<div class="final-cta">{frm}</div></main>'
+    contact_ld = {"@type": "ContactPage", "url": f"{SITE}{url}", "about": {"@id": f"{SITE}/#business"}}
+    ld = ld_graph("en", url, F["title"], F["desc"], crumbs=crumbs, extra=[contact_ld])
+    alts = {l: path(l, "contact") for l in LANGS}
+    return url, alts, head("en", F["title"], F["desc"], url, alts, ld, og_for("en")) + header("en", "contact", alts) + body + footer("en") + i18n_script("en")
 
 
 def page_services_hub():
@@ -711,13 +767,14 @@ def main():
         pages.append(page_services_hub() if lang == "en" else simple_page(lang, "services", body_services))
         pages.append(simple_page(lang, "industries", body_industries))
         pages.append(simple_page(lang, "pricing", body_pricing, extra_ld=[lambda u, l: faq_ld(u, l, FAQ[l][2][1])]))
-        pages.append(simple_page(lang, "about", body_about))
+        pages.append(page_about_en() if lang == "en" else simple_page(lang, "about", body_about))
         pages.append(simple_page(lang, "faq", body_faq, extra_ld=[faq_all_ld]))
-        pages.append(simple_page(lang, "contact", body_contact))
+        pages.append(page_free_audit() if lang == "en" else simple_page(lang, "contact", body_contact))
         for n in NICHES:
             pages.append(page_niche(lang, n))
     pages.append(page_service(local_seo, "Local SEO Campaign", "Local SEO", "749"))
     pages.append(page_service(gbp, "Google Business Profile Optimization", "Google Business Profile optimization", "299"))
+    pages.append(page_service(maintenance, "SEO Maintenance", "Local SEO maintenance", "399"))
     pages.append(page_service(website_seo, "Website + Local SEO", "Local SEO website design", "1999"))
     seen = {}
     for url, alts, doc in pages:
@@ -737,7 +794,8 @@ def main():
     # old addresses -> new ones (Cloudflare Pages _redirects)
     (OUT / "_redirects").write_text(
         "/ru /es/ 301\n/ru/ /es/ 301\n/ru/* /es/ 301\n"
-        "/local-seo-for-plumbers /local-seo-for-restaurants/ 301\n/local-seo-for-plumbers/ /local-seo-for-restaurants/ 301\n")
+        "/local-seo-for-plumbers /local-seo-for-restaurants/ 301\n/local-seo-for-plumbers/ /local-seo-for-restaurants/ 301\n"
+        "/contact /free-audit/ 301\n/contact/ /free-audit/ 301\n")
     (OUT / "404.html").write_text(page_404())
     icons_out()
     og_image("en", "og-image.png")

@@ -1,7 +1,7 @@
 """All Services hub (/services/, English). Client copy 01.11.2026. Local SEO price kept at the client's later $749."""
 
 URL = "/services/"
-MAINT = "#maintenance"  # → /services/seo-maintenance/ once that page exists
+MAINT = "/services/seo-maintenance/"
 P = dict(
     title="BEST Local SEO Services Orlando | GBP, Website SEO & Maintenance Near Me | Rankelo",
     desc="Explore Rankelo’s Local SEO services for Orlando businesses, including Local SEO campaigns, Google Business "
@@ -61,7 +61,7 @@ P = dict(
                 "SEO Maintenance is designed to help monitor rankings, handle smaller SEO updates, keep an eye on your local "
                 "presence, and identify issues that may need attention over time."],
              best="Businesses that have already completed their initial SEO work and want continued support.",
-             price="$399", unit="/month", cta="Ask about SEO Maintenance", href="#audit", icon="track", pick="maintenance"),
+             price="$399", unit="/month", cta="Explore SEO Maintenance", href="/services/seo-maintenance/", icon="track"),
     ],
     # 4. COMPARE
     cmp_h="Compare Rankelo services",
@@ -145,7 +145,7 @@ def render(ctx):
     <p class="srow-best"><b>{e(P['best'])}</b> {e(s['best'])}</p>
     <div class="srow-foot">
       <div class="srow-price"><small>{e(P['starting'])}</small><b>{e(s['price'])}{unit(s['unit'])}</b></div>
-      <a class="btn {'btn-dark' if s['id'] != 'maintenance' else 'btn-ghost'}" href="{s['href']}"{f' data-pick="{s["pick"]}"' if s.get('pick') else ''}><span>{e(s['cta'])}</span>{arr}</a>
+      <a class="btn btn-dark" href="{s['href']}"{f' data-pick="{s["pick"]}"' if s.get('pick') else ''}><span>{e(s['cta'])}</span>{arr}</a>
     </div>
   </div>
 </article>""" for s in P["services"])

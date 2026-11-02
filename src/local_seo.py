@@ -116,7 +116,7 @@ P = dict(
         "continued attention to their local presence after the initial campaign.",
     ],
     after_cta="Explore SEO Maintenance",
-    after_href="/services/#maintenance",  # → /services/seo-maintenance/ once that page exists
+    after_href="/services/seo-maintenance/",  # → /services/seo-maintenance/ once that page exists
     # 10. FAQ
     faq_h="Frequently asked questions",
     faq=[

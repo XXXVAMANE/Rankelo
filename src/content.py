@@ -2,6 +2,7 @@
 
 PHONE_DISPLAY = "(321) 616-0799"
 PHONE_E164 = "+13216160799"
+EMAIL = "contact@rankelo.org"
 AREAS = ["Orlando", "Melbourne", "West Palm Beach"]
 
 # page key -> slug per language ("" = home)
@@ -12,7 +13,7 @@ SLUGS = {
     "pricing":    dict(en="pricing/",    es="es/precios/"),
     "about":      dict(en="about/",      es="es/nosotros/"),
     "faq":        dict(en="faq/",        es="es/preguntas-frecuentes/"),
-    "contact":    dict(en="contact/",    es="es/contacto/"),
+    "contact":    dict(en="free-audit/", es="es/contacto/"),
 }
 
 T = {
@@ -28,7 +29,7 @@ T = {
     svc_menu=[("Local SEO Campaign", "/services/local-seo/"), ("Google Business Profile", "/services/google-business-profile/"), ("SEO-Ready Websites", "/services/website-local-seo/")],
     svc_all="View All Services",
     svc_links=[("Local SEO Campaign", "/services/local-seo/", ""), ("Google Business Profile", "/services/google-business-profile/", ""),
-               ("Website + Local SEO", "/services/website-local-seo/", ""), ("SEO Maintenance", "/services/#maintenance", "")],
+               ("Website + Local SEO", "/services/website-local-seo/", ""), ("SEO Maintenance", "/services/seo-maintenance/", "")],
     meta_bar=["First results in 2–3 weeks", "Reply within 24 hours", "No long-term contracts"],
     # form
     f=dict(
