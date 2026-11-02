@@ -15,6 +15,7 @@ import home_v2
 import local_seo
 import gbp
 import website_seo
+import services_hub
 import service_page
 
 SITE = (sys.argv[1] if len(sys.argv) > 1 else "https://rankelo.org").rstrip("/")
@@ -22,7 +23,7 @@ KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
 SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "17"  # cache-buster for css/js
+VER = "18"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
@@ -147,7 +148,7 @@ def footer(lang):
     tx = T[lang]
     comp = "".join(f'<li><a href="{path(lang, k)}">{e(lbl)}</a></li>' for k, lbl in tx["nav"] if k in ("about", "pricing", "faq"))
     comp += f'<li><a href="{path(lang, "contact")}">{e(tx["foot_contact_page"])}</a></li>'
-    svc = "".join(f'<li><a href="{path(lang, k)}#{a}">{e(lbl)}</a></li>' for lbl, k, a in tx["svc_links"])
+    svc = "".join(f'<li><a href="{k if k.startswith("/") else path(lang, k) + "#" + a}">{e(lbl)}</a></li>' for lbl, k, a in tx["svc_links"])
     ind = "".join(f'<li><a href="{npath(lang, n)}">{e(n[lang]["name"])}</a></li>' for n in NICHES)
     return f"""<footer class="site">
   <div class="wrap">
@@ -517,6 +518,22 @@ def body_contact(lang, P):
     return form(lang, h2=P["next_h"], steps=P["next"], side_extra=info, sec_id="form")
 
 
+def page_services_hub():
+    P, url = services_hub.P, services_hub.URL
+    crumbs = [(T["en"]["home"], path("en", "home")), (T["en"]["nav"][0][1], url)]
+    ctx = dict(e=e, icon=icon, faq_items=faq_items, form=form, home=home_v2.HOME)
+    body = services_hub.render(ctx)
+    items = [{"@type": "ListItem", "position": i + 1, "item": {
+        "@type": "Service", "name": sv["t"], "description": sv["out"], "provider": {"@id": f"{SITE}/#business"},
+        "url": f"{SITE}{sv['href']}" if sv["href"].startswith("/") else f"{SITE}{url}#{sv['id']}",
+        "offers": {"@type": "Offer", "priceCurrency": "USD", "price": sv["price"].strip("$").replace(",", "")}}}
+        for i, sv in enumerate(P["services"])]
+    ld = ld_graph("en", url, P["title"], P["desc"], crumbs=crumbs,
+                  extra=[{"@type": "ItemList", "name": "Rankelo services", "itemListElement": items}, faq_ld(url, "en", P["faq"])])
+    alts = {l: path(l, "services") for l in LANGS}
+    return url, alts, head("en", P["title"], P["desc"], url, alts, ld, og_for("en")) + header("en", "services", alts) + body + footer("en") + i18n_script("en")
+
+
 def page_service(mod, name, service_type, price):
     """English-only service page built from a content module (local_seo, gbp, ...)."""
     P, url = mod.P, mod.URL
@@ -691,7 +708,7 @@ def main():
     pages = []
     for lang in LANGS:
         pages.append(page_home(lang))
-        pages.append(simple_page(lang, "services", body_services))
+        pages.append(page_services_hub() if lang == "en" else simple_page(lang, "services", body_services))
         pages.append(simple_page(lang, "industries", body_industries))
         pages.append(simple_page(lang, "pricing", body_pricing, extra_ld=[lambda u, l: faq_ld(u, l, FAQ[l][2][1])]))
         pages.append(simple_page(lang, "about", body_about))

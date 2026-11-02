@@ -18,7 +18,7 @@ SLUGS = {
 T = {
 "en": dict(
     lang_name="English", locale="en_US",
-    nav=[("services", "Services"), ("industries", "Industries"), ("pricing", "Pricing"), ("about", "About"), ("faq", "FAQ")],
+    nav=[("services", "Services"), ("pricing", "Pricing"), ("about", "About"), ("faq", "FAQ")],
     cta="Free audit", menu="Menu", close="Close",
     home="Home", skip="Skip to content",
     foot_tag="Local SEO and websites for small businesses in Florida.",
@@ -27,8 +27,8 @@ T = {
     rights="All rights reserved.",
     svc_menu=[("Local SEO Campaign", "/services/local-seo/"), ("Google Business Profile", "/services/google-business-profile/"), ("SEO-Ready Websites", "/services/website-local-seo/")],
     svc_all="View All Services",
-    svc_links=[("Google Business Profile", "services", "gbp"), ("Google Maps rankings", "services", "maps"),
-               ("Reviews strategy", "services", "reviews"), ("Website design", "services", "web")],
+    svc_links=[("Local SEO Campaign", "/services/local-seo/", ""), ("Google Business Profile", "/services/google-business-profile/", ""),
+               ("Website + Local SEO", "/services/website-local-seo/", ""), ("SEO Maintenance", "/services/#maintenance", "")],
     meta_bar=["First results in 2–3 weeks", "Reply within 24 hours", "No long-term contracts"],
     # form
     f=dict(
@@ -53,7 +53,7 @@ T = {
 ),
 "es": dict(
     lang_name="Español", locale="es_US",
-    nav=[("services", "Servicios"), ("industries", "Industrias"), ("pricing", "Precios"), ("about", "Nosotros"), ("faq", "Preguntas")],
+    nav=[("services", "Servicios"), ("pricing", "Precios"), ("about", "Nosotros"), ("faq", "Preguntas")],
     cta="Auditoría gratis", menu="Menú", close="Cerrar",
     home="Inicio", skip="Ir al contenido",
     foot_tag="SEO local y sitios web para pequeños negocios en Florida.",

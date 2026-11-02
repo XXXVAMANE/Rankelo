@@ -88,7 +88,7 @@ HOME = dict(
         dict(t="SEO Maintenance", featured=False, price="$399", unit="/month",
              d="Optional ongoing support after your initial campaign to monitor rankings, maintain your local search "
                "presence, handle smaller SEO updates, and keep an eye on competitors.",
-             cta="Explore SEO Maintenance", href="services/#reports", pick="maintenance"),
+             cta="Explore SEO Maintenance", href="services/#maintenance", pick="maintenance"),
     ],
     starting="Starting at",
     svc_all="View All Services",
