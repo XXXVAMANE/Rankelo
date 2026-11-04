@@ -19,7 +19,7 @@ SLUGS = {
 T = {
 "en": dict(
     lang_name="English", locale="en_US",
-    nav=[("services", "Services"), ("pricing", "Pricing"), ("about", "About"), ("faq", "FAQ")],
+    nav=[("services", "Services"), ("about", "About"), ("faq", "FAQ")],
     cta="Free audit", menu="Menu", close="Close",
     home="Home", skip="Skip to content",
     foot_tag="Local SEO and websites for small businesses in Florida.",
@@ -54,7 +54,7 @@ T = {
 ),
 "es": dict(
     lang_name="Español", locale="es_US",
-    nav=[("services", "Servicios"), ("pricing", "Precios"), ("about", "Nosotros"), ("faq", "Preguntas")],
+    nav=[("services", "Servicios"), ("about", "Nosotros"), ("faq", "Preguntas")],
     cta="Auditoría gratis", menu="Menú", close="Cerrar",
     home="Inicio", skip="Ir al contenido",
     foot_tag="SEO local y sitios web para pequeños negocios en Florida.",

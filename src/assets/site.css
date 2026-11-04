@@ -103,6 +103,9 @@ header.site.scrolled{border-bottom-color:var(--line)}
 .mnav .msub{display:grid;padding:.2rem 0 .6rem .9rem;border-bottom:1px solid var(--line)}
 .mnav .msub a.ms{padding:.55rem 0;font-weight:500;font-size:1.02rem;color:var(--ink-2);text-decoration:none}
 .mnav .msub a.ms::before{content:"— ";color:var(--gold-deep)}
+.mnav .msub a.ms-all{margin-top:.3rem;padding-top:.75rem;border-top:1px dashed var(--line-2);font-weight:600;color:var(--ink)}
+.mnav .msub a.ms-all::before{content:none}
+.mnav .msub a.ms-all span{color:var(--gold-deep);font-family:var(--f-mono)}
 .mnav a.m:has(+ .msub){border-bottom:0}
 .nav-right{display:flex;align-items:center;gap:.7rem}
 .lang{position:relative;display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line-2);border-radius:999px;padding:3px}

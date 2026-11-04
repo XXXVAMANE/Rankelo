@@ -27,7 +27,7 @@ KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
 SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "22"  # cache-buster for css/js
+VER = "23"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
@@ -127,6 +127,7 @@ def header(lang, current, alts):
                 f'<div class="dd-menu" id="dd-svc" role="menu">{dd_items}<hr><a role="menuitem" class="dd-all" href="{sp}">{e(tx["svc_all"])} <span aria-hidden="true">→</span></a></div></div>')
     links = "".join(nav_link(k, lbl) for k, lbl in tx["nav"])
     msub = "".join(f'<a class="ms" href="{svc_href(a)}">{e(lbl)}</a>' for lbl, a in tx["svc_menu"])
+    msub += f'<a class="ms ms-all" href="{sp}">{e(tx["svc_all"])} <span aria-hidden="true">→</span></a>'
     mlinks = "".join(f'<a class="m" href="{path(lang, k)}">{e(lbl)}</a>' + (f'<div class="msub">{msub}</div>' if k == "services" else "")
                      for k, lbl in tx["nav"])
     sw = "".join(
@@ -657,7 +658,7 @@ def page_niche(lang, n):
 <section class="alt"><div class="wrap">{sec_head(U['problem'], N['why'])}<div class="nums">{problems}</div></div></section>
 <section id="how"><div class="wrap">{sec_head(U['what'], U['what_h'].format(one=N['one']))}<div class="svc-grid">{work}</div></div></section>
 <section class="tight"><div class="wrap">{sec_head(U['searches'], U['searches_h'], U['searches_p'])}<div class="chips reveal">{kws}</div></div></section>
-{band(lang, U['band'], U['band_cta'], path(lang, 'pricing'))}
+{band(lang, U['band'], U['band_cta'], path(lang, 'services') + '#compare')}
 <section class="alt"><div class="wrap faq-grid">
   <div>{sec_head('FAQ' if lang == 'en' else PAGES[lang]['home']['faq_eb'], U['faq_h'].format(one=N['one']))}</div>
   <div class="faq reveal">{faq_items(N['faq'])}</div>
@@ -789,7 +790,6 @@ def main():
         pages.append(page_home(lang))
         pages.append(page_services_hub(lang))
         pages.append(simple_page(lang, "industries", body_industries))
-        pages.append(simple_page(lang, "pricing", body_pricing, extra_ld=[lambda u, l: faq_ld(u, l, FAQ[l][2][1])]))
         pages.append(page_about(lang))
         pages.append(page_faq(lang))
         pages.append(page_free_audit(lang))
@@ -819,7 +819,9 @@ def main():
         "/ru /es/ 301\n/ru/ /es/ 301\n/ru/* /es/ 301\n"
         "/local-seo-for-plumbers /local-seo-for-restaurants/ 301\n/local-seo-for-plumbers/ /local-seo-for-restaurants/ 301\n"
         "/contact /free-audit/ 301\n/contact/ /free-audit/ 301\n"
-        "/es/contacto /es/auditoria-gratis/ 301\n/es/contacto/ /es/auditoria-gratis/ 301\n")
+        "/es/contacto /es/auditoria-gratis/ 301\n/es/contacto/ /es/auditoria-gratis/ 301\n"
+        "/pricing /services/#compare 301\n/pricing/ /services/#compare 301\n"
+        "/es/precios /es/servicios/#compare 301\n/es/precios/ /es/servicios/#compare 301\n")
     (OUT / "404.html").write_text(page_404())
     icons_out()
     og_image("en", "og-image.png")
