@@ -38,6 +38,11 @@
     dd.addEventListener("keydown", function (e) { if (e.key === "Escape") { set(false); b.focus(); } });
     dd.addEventListener("focusout", function (e) { if (!dd.contains(e.relatedTarget)) set(false); });
   });
+  /* ---------- Meta Pixel: calls / emails count as "Contact" ---------- */
+  var track = function () { try { if (window.fbq) window.fbq.apply(null, arguments); } catch (_) {} };
+  $$('a[href^="tel:"], a[href^="mailto:"]').forEach(function (a) {
+    a.addEventListener("click", function () { track("track", "Contact", { method: a.href.slice(0, 4) === "tel:" ? "phone" : "email" }); });
+  });
   var yr = $("#yr"); if (yr) yr.textContent = new Date().getFullYear();
 
   /* ---------- hero: type a search, then climb to #1 (cycles through examples) ---------- */
@@ -179,6 +184,7 @@
         body: JSON.stringify(Object.fromEntries(fd))
       });
       if (!r.ok) throw new Error(r.status);
+      track("track", "Lead", { content_name: String(fd.get("service") || ""), content_category: location.pathname });
       showDone(false);
     } catch (_) { $("#e-form").textContent = t("err_send"); busy(false); }
   });

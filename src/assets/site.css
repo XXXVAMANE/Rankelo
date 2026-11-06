@@ -709,6 +709,11 @@ a.fa-c:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 14
 .faq h2.faq-cat:first-child{margin-top:0}
 .faq .faq-ticks{margin:.2rem 0 .6rem}
 .faq details .link{display:inline-flex}
+.legal{max-width:760px;display:grid;gap:1rem}
+.legal h2{font-size:1.35rem;margin-top:1.4rem}
+.legal h2:first-child{margin-top:0}
+.legal p{color:var(--ink-2);line-height:1.65}
+.form-foot small a{color:inherit;text-decoration:underline}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}

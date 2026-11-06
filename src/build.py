@@ -20,6 +20,7 @@ import maintenance
 import about_page
 import es_pages
 import faq_page
+import privacy_page
 import service_page
 
 SITE = (sys.argv[1] if len(sys.argv) > 1 else "https://rankelo.org").rstrip("/")
@@ -27,7 +28,7 @@ KEY = sys.argv[2] if len(sys.argv) > 2 else "YOUR_WEB3FORMS_KEY"
 SHEET = sys.argv[3] if len(sys.argv) > 3 else ""  # Google Apps Script web app URL (optional)
 OUT = HERE.parent / "dist"
 FONTS = HERE.parent / "fonts"  # Unbounded + Manrope (SIL OFL), used for social preview images
-VER = "23"  # cache-buster for css/js
+VER = "24"  # cache-buster for css/js
 LANGS = ("en", "es")
 e = html.escape
 
@@ -69,6 +70,16 @@ def h1(parts, cls=""):
     return f'<h1{cls}>{e(parts[0])} <em>{e(parts[1])}</em></h1>'
 
 
+# ------------------------------------------------------------------ Meta Pixel
+META_PIXEL_ID = "3070416113351045"
+# Loaded on every page; the Lead event fires from site.js only after a form is actually sent.
+PIXEL_HTML = ("<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?"
+              "n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;"
+              "n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];"
+              "s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');"
+              f"fbq('init','{META_PIXEL_ID}');fbq('track','PageView');</script>\n")
+
+
 # ------------------------------------------------------------------ shared chrome
 def head(lang, title, desc, url_path, alts, ld, og):
     alt_html = ""
@@ -108,7 +119,7 @@ def head(lang, title, desc, url_path, alts, ld, og):
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/assets/site.css?v={VER}">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
-</head>
+{PIXEL_HTML}</head>
 <body>
 """
 
@@ -153,6 +164,7 @@ def footer(lang):
     tx = T[lang]
     comp = "".join(f'<li><a href="{path(lang, k)}">{e(lbl)}</a></li>' for k, lbl in tx["nav"] if k in ("about", "pricing", "faq"))
     comp += f'<li><a href="{path(lang, "contact")}">{e(tx["foot_contact_page"])}</a></li>'
+    comp += f'<li><a href="{privacy_page.EN["url"] if lang == "en" else privacy_page.ES["url"]}">{"Privacy Policy" if lang == "en" else "Política de privacidad"}</a></li>'
     svc = "".join(f'<li><a href="{k if k.startswith("/") else path(lang, k) + "#" + a}">{e(lbl)}</a></li>' for lbl, k, a in tx["svc_links"])
     ind = "".join(f'<li><a href="{npath(lang, n)}">{e(n[lang]["name"])}</a></li>' for n in NICHES)
     return f"""<footer class="site">
@@ -267,7 +279,7 @@ def form(lang, niche_name=None, eb=None, h2=None, lead=None, steps=None, side_ex
         {site_row}
         {svc_field}
         <div class="field"><label for="f-msg">{e(f['msg'])} {opt}</label><textarea id="f-msg" name="message" placeholder="{e(f['msg_ph'])}"></textarea></div>
-        <div class="form-foot"><small>{e(f['privacy'])}</small>
+        <div class="form-foot"><small>{e(f['privacy'])} <a href="{privacy_page.EN['url'] if lang == 'en' else privacy_page.ES['url']}">{'Privacy Policy' if lang == 'en' else 'Política de privacidad'}</a></small>
           <button class="btn btn-dark" type="submit" id="f-submit"><span>{e(f['submit'])}</span><span class="arr" aria-hidden="true">→</span></button></div>
         <p class="err" id="e-form" role="alert"></p>
       </form>
@@ -553,6 +565,17 @@ FREE_AUDIT = dict(
 )
 
 
+def page_privacy(lang):
+    P = privacy_page.EN if lang == "en" else privacy_page.ES
+    url = P["url"]
+    alts = {"en": privacy_page.EN["url"], "es": privacy_page.ES["url"]}
+    crumbs = [(T[lang]["home"], path(lang, "home")), (P["h1"][0] + " " + P["h1"][1], url)]
+    hero = page_hero(lang, P["eb"], P["h1"], P["lead"], crumbs)
+    body = f'<main id="main">{hero}{privacy_page.render(e, P)}</main>'
+    ld = ld_graph(lang, url, P["title"], P["desc"], crumbs=crumbs)
+    return url, alts, head(lang, P["title"], P["desc"], url, alts, ld, og_for(lang)) + header(lang, "privacy", alts) + body + footer(lang) + i18n_script(lang)
+
+
 def page_faq(lang):
     P = faq_page.EN if lang == "en" else faq_page.ES
     url = path(lang, "faq")
@@ -792,6 +815,7 @@ def main():
         pages.append(simple_page(lang, "industries", body_industries))
         pages.append(page_about(lang))
         pages.append(page_faq(lang))
+        pages.append(page_privacy(lang))
         pages.append(page_free_audit(lang))
         for n in NICHES:
             pages.append(page_niche(lang, n))
